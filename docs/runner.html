@@ -53,7 +53,41 @@ time how the css changes affect each one.</p>
 
     runningWindows.push sandbox
 
-    <span class="keyword">return</span> sandbox
+    <span class="keyword">return</span> sandbox</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Generate an html template that runs the given script tag strings as tests.</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">  testsHtml: (testScripts) -&gt; 
+    <span class="string">"""
+      &lt;html&gt;
+      &lt;head&gt;
+        &lt;meta charset="utf-8"&gt;
+        &lt;title&gt;Mocha Tests&lt;/title&gt;
+        &lt;link rel="stylesheet" href="http://strd6.github.io/tests/mocha.css"/&gt;
+      &lt;/head&gt;
+      &lt;body&gt;
+        &lt;div id="mocha"&gt;&lt;/div&gt;
+        &lt;script src="http://strd6.github.io/tests/assert.js"&gt;&lt;\/script&gt;
+        &lt;script src="http://strd6.github.io/tests/mocha.js"&gt;&lt;\/script&gt;
+        &lt;script&gt;mocha.setup('bdd')&lt;\/script&gt;
+        <span class="subst">#{testScripts}</span>
+        &lt;script&gt;
+          mocha.checkLeaks();
+          mocha.globals(['jQuery']);
+          mocha.run();
+        &lt;\/script&gt;
+      &lt;/body&gt;
+      &lt;/html&gt;
+    """</span>
 
   hotReloadCSS: (css) -&gt;
     runningWindows = runningWindows.select (window) -&gt;
@@ -73,9 +107,9 @@ module.exports = Runner</code></pre>
         
     </ul>
   </div>
-  <script src="package.js"></script>,<script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
+  <script src="//code.jquery.com/jquery-1.10.1.min.js"></script>
 <script src="//cdnjs.cloudflare.com/ajax/libs/coffee-script/1.6.3/coffee-script.min.js"></script>
 <script src="http://strd6.github.io/require/v0.2.2.js"></script>
-<script src="http://strd6.github.io/interactive/v0.8.0.js"></script>
+<script src="http://strd6.github.io/interactive/v0.8.0.js"></script><script src="package.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
   // Expose a require for our package so scripts can access our modules
   window.require = Require.generateFor(pkg);
 })({
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.1",
   "source": {
     "LICENSE": {
       "path": "LICENSE",
@@ -16,28 +16,28 @@
       "content": "runner\n======\n\nRunner manages running apps in sandboxed windows and passing messages back and forth from the parent to the running instances.\n",
       "type": "blob"
     },
-    "runner.coffee.md": {
-      "path": "runner.coffee.md",
-      "mode": "100644",
-      "content": "Runner\n======\n\nRunner manages running apps in sandboxed windows and passing messages back and\nforth from the parent to the running instances.\n\nWe keep a list of running windows so we can hot-update them when we modify our\nown code.\n\nOne cool example use is if you are modifying your css you can run several\ninstances of your app and navigate to different states. Then you can see in real\ntime how the css changes affect each one.\n\n    runningWindows = []\n\n    Runner = ->\n      run: ({config}={}) ->\n        {width, height} = (config or {})\n\n        sandbox = Sandbox\n          width: width\n          height: height\n\n        runningWindows.push sandbox\n\n        return sandbox\n\n      hotReloadCSS: (css) ->\n        runningWindows = runningWindows.select (window) ->\n          return false if window.closed\n\n          # TODO: We're assuming only one style in the body\n          # which is reasonable in most cases, but we may want\n          # to scope it by the path of the specific css file\n          # to handle a wider range of situations\n          $(window.document).find(\"body style:eq(0)\").html(css)\n\n          return true\n\n    module.exports = Runner\n",
-      "type": "blob"
-    },
     "pixie.cson": {
       "path": "pixie.cson",
       "mode": "100644",
-      "content": "version: \"0.1.0\"\nentryPoint: \"runner\"\n",
+      "content": "version: \"0.1.0-alpha.1\"\nentryPoint: \"runner\"\n",
+      "type": "blob"
+    },
+    "runner.coffee.md": {
+      "path": "runner.coffee.md",
+      "mode": "100644",
+      "content": "Runner\n======\n\nRunner manages running apps in sandboxed windows and passing messages back and\nforth from the parent to the running instances.\n\nWe keep a list of running windows so we can hot-update them when we modify our\nown code.\n\nOne cool example use is if you are modifying your css you can run several\ninstances of your app and navigate to different states. Then you can see in real\ntime how the css changes affect each one.\n\n    runningWindows = []\n\n    Runner = ->\n      run: ({config}={}) ->\n        {width, height} = (config or {})\n\n        sandbox = Sandbox\n          width: width\n          height: height\n\n        runningWindows.push sandbox\n\n        return sandbox\n\nGenerate an html template that runs the given script tag strings as tests.\n\n      testsHtml: (testScripts) -> \n        \"\"\"\n          <html>\n          <head>\n            <meta charset=\"utf-8\">\n            <title>Mocha Tests</title>\n            <link rel=\"stylesheet\" href=\"http://strd6.github.io/tests/mocha.css\"/>\n          </head>\n          <body>\n            <div id=\"mocha\"></div>\n            <script src=\"http://strd6.github.io/tests/assert.js\"><\\/script>\n            <script src=\"http://strd6.github.io/tests/mocha.js\"><\\/script>\n            <script>mocha.setup('bdd')<\\/script>\n            #{testScripts}\n            <script>\n              mocha.checkLeaks();\n              mocha.globals(['jQuery']);\n              mocha.run();\n            <\\/script>\n          </body>\n          </html>\n        \"\"\"\n\n      hotReloadCSS: (css) ->\n        runningWindows = runningWindows.select (window) ->\n          return false if window.closed\n\n          # TODO: We're assuming only one style in the body\n          # which is reasonable in most cases, but we may want\n          # to scope it by the path of the specific css file\n          # to handle a wider range of situations\n          $(window.document).find(\"body style:eq(0)\").html(css)\n\n          return true\n\n    module.exports = Runner\n",
       "type": "blob"
     }
   },
   "distribution": {
-    "runner": {
-      "path": "runner",
-      "content": "(function() {\n  var Runner, runningWindows;\n\n  runningWindows = [];\n\n  Runner = function() {\n    return {\n      run: function(_arg) {\n        var config, height, sandbox, width, _ref;\n        config = (_arg != null ? _arg : {}).config;\n        _ref = config || {}, width = _ref.width, height = _ref.height;\n        sandbox = Sandbox({\n          width: width,\n          height: height\n        });\n        runningWindows.push(sandbox);\n        return sandbox;\n      },\n      hotReloadCSS: function(css) {\n        return runningWindows = runningWindows.select(function(window) {\n          if (window.closed) {\n            return false;\n          }\n          $(window.document).find(\"body style:eq(0)\").html(css);\n          return true;\n        });\n      }\n    };\n  };\n\n  module.exports = Runner;\n\n}).call(this);\n\n//# sourceURL=runner.coffee",
-      "type": "blob"
-    },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.1.0\",\"entryPoint\":\"runner\"};",
+      "content": "module.exports = {\"version\":\"0.1.0-alpha.1\",\"entryPoint\":\"runner\"};",
+      "type": "blob"
+    },
+    "runner": {
+      "path": "runner",
+      "content": "(function() {\n  var Runner, runningWindows;\n\n  runningWindows = [];\n\n  Runner = function() {\n    return {\n      run: function(_arg) {\n        var config, height, sandbox, width, _ref;\n        config = (_arg != null ? _arg : {}).config;\n        _ref = config || {}, width = _ref.width, height = _ref.height;\n        sandbox = Sandbox({\n          width: width,\n          height: height\n        });\n        runningWindows.push(sandbox);\n        return sandbox;\n      },\n      testsHtml: function(testScripts) {\n        return \"<html>\\n<head>\\n  <meta charset=\\\"utf-8\\\">\\n  <title>Mocha Tests</title>\\n  <link rel=\\\"stylesheet\\\" href=\\\"http://strd6.github.io/tests/mocha.css\\\"/>\\n</head>\\n<body>\\n  <div id=\\\"mocha\\\"></div>\\n  <script src=\\\"http://strd6.github.io/tests/assert.js\\\"><\\/script>\\n  <script src=\\\"http://strd6.github.io/tests/mocha.js\\\"><\\/script>\\n  <script>mocha.setup('bdd')<\\/script>\\n  \" + testScripts + \"\\n  <script>\\n    mocha.checkLeaks();\\n    mocha.globals(['jQuery']);\\n    mocha.run();\\n  <\\/script>\\n</body>\\n</html>\";\n      },\n      hotReloadCSS: function(css) {\n        return runningWindows = runningWindows.select(function(window) {\n          if (window.closed) {\n            return false;\n          }\n          $(window.document).find(\"body style:eq(0)\").html(css);\n          return true;\n        });\n      }\n    };\n  };\n\n  module.exports = Runner;\n\n}).call(this);\n\n//# sourceURL=runner.coffee",
       "type": "blob"
     }
   },
@@ -106,16 +106,16 @@
     "notifications_url": "https://api.github.com/repos/STRd6/runner/notifications{?since,all,participating}",
     "labels_url": "https://api.github.com/repos/STRd6/runner/labels{/name}",
     "created_at": "2013-10-10T20:42:25Z",
-    "updated_at": "2013-10-10T20:42:25Z",
-    "pushed_at": "2013-10-10T20:42:25Z",
+    "updated_at": "2013-10-11T02:47:36Z",
+    "pushed_at": "2013-10-11T02:47:35Z",
     "git_url": "git://github.com/STRd6/runner.git",
     "ssh_url": "git@github.com:STRd6/runner.git",
     "clone_url": "https://github.com/STRd6/runner.git",
     "svn_url": "https://github.com/STRd6/runner",
     "homepage": null,
-    "size": 0,
+    "size": 368,
     "watchers_count": 0,
-    "language": null,
+    "language": "CoffeeScript",
     "has_issues": true,
     "has_downloads": true,
     "has_wiki": true,
@@ -134,10 +134,7 @@
     },
     "network_count": 0,
     "branch": "master",
-    "defaultBranch": "master",
-    "includedModules": [
-      "Bindable"
-    ]
+    "defaultBranch": "master"
   },
   "progenitor": {
     "url": "http://strd6.github.io/editor/"
