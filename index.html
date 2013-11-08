@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="manifest.appcache?1382049846269">
+<html manifest="manifest.appcache?1383953067775">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
@@ -10,7 +10,7 @@
 var require = Require.generateFor(PACKAGE);
 require('./runner')
 })({
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0",
   "source": {
     "LICENSE": {
       "path": "LICENSE",
@@ -27,20 +27,20 @@ require('./runner')
     "pixie.cson": {
       "path": "pixie.cson",
       "mode": "100644",
-      "content": "version: \"0.1.0-alpha.1\"\nentryPoint: \"runner\"\n",
+      "content": "version: \"0.1.0\"\nentryPoint: \"runner\"\n",
       "type": "blob"
     },
     "runner.coffee.md": {
       "path": "runner.coffee.md",
       "mode": "100644",
-      "content": "Runner\n======\n\nRunner manages running apps in sandboxed windows and passing messages back and\nforth from the parent to the running instances.\n\nWe keep a list of running windows so we can hot-update them when we modify our\nown code.\n\nOne cool example use is if you are modifying your css you can run several\ninstances of your app and navigate to different states. Then you can see in real\ntime how the css changes affect each one.\n\n    runningWindows = []\n\n    Runner = ->\n      run: ({config}={}) ->\n        {width, height} = (config or {})\n\n        sandbox = Sandbox\n          width: width\n          height: height\n\n        runningWindows.push sandbox\n\n        return sandbox\n\nGenerate an html template that runs the given script tag strings as tests.\n\n      testsHtml: (testScripts) -> \n        \"\"\"\n          <html>\n          <head>\n            <meta charset=\"utf-8\">\n            <title>Mocha Tests</title>\n            <link rel=\"stylesheet\" href=\"http://strd6.github.io/tests/mocha.css\"/>\n          </head>\n          <body>\n            <div id=\"mocha\"></div>\n            <script src=\"http://strd6.github.io/tests/assert.js\"><\\/script>\n            <script src=\"http://strd6.github.io/tests/mocha.js\"><\\/script>\n            <script>mocha.setup('bdd')<\\/script>\n            #{testScripts}\n            <script>\n              mocha.checkLeaks();\n              mocha.globals(['jQuery']);\n              mocha.run();\n            <\\/script>\n          </body>\n          </html>\n        \"\"\"\n\n      hotReloadCSS: (css) ->\n        runningWindows = runningWindows.select (window) ->\n          return false if window.closed\n\n          # TODO: We're assuming only one style in the body\n          # which is reasonable in most cases, but we may want\n          # to scope it by the path of the specific css file\n          # to handle a wider range of situations\n          $(window.document).find(\"body style:eq(0)\").html(css)\n\n          return true\n\n    module.exports = Runner\n",
+      "content": "Runner\n======\n\nRunner manages running apps in sandboxed windows and passing messages back and\nforth from the parent to the running instances.\n\nWe keep a list of running windows so we can hot-update them when we modify our\nown code.\n\nOne cool example use is if you are modifying your css you can run several\ninstances of your app and navigate to different states. Then you can see in real\ntime how the css changes affect each one.\n\n    runningWindows = []\n\n    Runner = ->\n      run: ({config}={}) ->\n        {width, height} = (config or {})\n\n        sandbox = Sandbox\n          width: width\n          height: height\n\n        runningWindows.push sandbox\n\n        return sandbox\n\nGenerate an html template that runs the given script tag strings as tests.\n\n      testsHtml: (testScripts) ->\n        \"\"\"\n          <html>\n          <head>\n            <meta charset=\"utf-8\">\n            <title>Mocha Tests</title>\n            <link rel=\"stylesheet\" href=\"http://strd6.github.io/tests/mocha.css\"/>\n          </head>\n          <body>\n            <div id=\"mocha\"></div>\n            <script src=\"http://strd6.github.io/tests/assert.js\"><\\/script>\n            <script src=\"http://strd6.github.io/tests/mocha.js\"><\\/script>\n            <script>mocha.setup('bdd')<\\/script>\n            #{testScripts}\n            <script>\n              mocha.checkLeaks();\n              mocha.globals(['jQuery']);\n              mocha.run();\n            <\\/script>\n          </body>\n          </html>\n        \"\"\"\n\n      hotReloadCSS: (css) ->\n        runningWindows = runningWindows.select (window) ->\n          return false if window.closed\n\n          # TODO: We're assuming only one style in the body\n          # which is reasonable in most cases, but we may want\n          # to scope it by the path of the specific css file\n          # to handle a wider range of situations\n          $(window.document).find(\"body style:eq(0)\").html(css)\n\n          return true\n\n    module.exports = Runner\n",
       "type": "blob"
     }
   },
   "distribution": {
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.1.0-alpha.1\",\"entryPoint\":\"runner\"};",
+      "content": "module.exports = {\"version\":\"0.1.0\",\"entryPoint\":\"runner\"};",
       "type": "blob"
     },
     "runner": {
@@ -51,6 +51,9 @@ require('./runner')
   },
   "entryPoint": "runner",
   "dependencies": {},
+  "progenitor": {
+    "url": "http://strd6.github.io/editor/"
+  },
   "repository": {
     "id": 13482507,
     "name": "runner",
@@ -58,7 +61,7 @@ require('./runner')
     "owner": {
       "login": "STRd6",
       "id": 18894,
-      "avatar_url": "https://2.gravatar.com/avatar/33117162fff8a9cf50544a604f60c045?d=https%3A%2F%2Fidenticons.github.com%2F39df222bffe39629d904e4883eabc654.png",
+      "avatar_url": "https://2.gravatar.com/avatar/33117162fff8a9cf50544a604f60c045?d=https%3A%2F%2Fidenticons.github.com%2F39df222bffe39629d904e4883eabc654.png&r=x",
       "gravatar_id": "33117162fff8a9cf50544a604f60c045",
       "url": "https://api.github.com/users/STRd6",
       "html_url": "https://github.com/STRd6",
@@ -113,15 +116,17 @@ require('./runner')
     "milestones_url": "https://api.github.com/repos/STRd6/runner/milestones{/number}",
     "notifications_url": "https://api.github.com/repos/STRd6/runner/notifications{?since,all,participating}",
     "labels_url": "https://api.github.com/repos/STRd6/runner/labels{/name}",
+    "releases_url": "https://api.github.com/repos/STRd6/runner/releases{/id}",
     "created_at": "2013-10-10T20:42:25Z",
-    "updated_at": "2013-10-11T02:47:36Z",
-    "pushed_at": "2013-10-11T02:47:35Z",
+    "updated_at": "2013-10-18T17:16:13Z",
+    "pushed_at": "2013-10-18T17:16:13Z",
     "git_url": "git://github.com/STRd6/runner.git",
     "ssh_url": "git@github.com:STRd6/runner.git",
     "clone_url": "https://github.com/STRd6/runner.git",
     "svn_url": "https://github.com/STRd6/runner",
     "homepage": null,
-    "size": 368,
+    "size": 688,
+    "stargazers_count": 0,
     "watchers_count": 0,
     "language": "CoffeeScript",
     "has_issues": true,
@@ -133,19 +138,17 @@ require('./runner')
     "forks": 0,
     "open_issues": 0,
     "watchers": 0,
-    "master_branch": "master",
     "default_branch": "master",
+    "master_branch": "master",
     "permissions": {
       "admin": true,
       "push": true,
       "pull": true
     },
     "network_count": 0,
+    "subscribers_count": 1,
     "branch": "master",
     "defaultBranch": "master"
-  },
-  "progenitor": {
-    "url": "http://strd6.github.io/editor/"
   }
 });
 </script>
