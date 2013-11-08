@@ -27,7 +27,7 @@ time how the css changes affect each one.
 
 Generate an html template that runs the given script tag strings as tests.
 
-      testsHtml: (testScripts) -> 
+      testsHtml: (testScripts) ->
         """
           <html>
           <head>
