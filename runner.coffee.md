@@ -11,6 +11,8 @@ One cool example use is if you are modifying your css you can run several
 instances of your app and navigate to different states. Then you can see in real
 time how the css changes affect each one.
 
+    Sandbox = require "sandbox"
+
     runningWindows = []
 
     Runner = ->
@@ -51,7 +53,7 @@ Generate an html template that runs the given script tag strings as tests.
         """
 
       hotReloadCSS: (css) ->
-        runningWindows = runningWindows.select (window) ->
+        runningWindows = runningWindows.filter (window) ->
           return false if window.closed
 
           # TODO: We're assuming only one style in the body
@@ -62,14 +64,14 @@ Generate an html template that runs the given script tag strings as tests.
 
           return true
 
-Call a global reload method on each running window, passing in the given data.
+Call a global reload method on each running window, passing in the given args.
 We may want to switch to using `postMessage` in the future.
 
-      reload: (data) ->
-        runningWindows = runningWindows.select (window) ->
+      reload: (args...) ->
+        runningWindows = runningWindows.filter (window) ->
           return false if window.closed
 
-          window.reload?(data)
+          window.reload?(args...)
 
           return true
 
