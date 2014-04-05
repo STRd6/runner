@@ -22,9 +22,6 @@ time how the css changes affect each one.
         sandbox = Sandbox
           width: width
           height: height
-          methods:
-            reload: (data) ->
-              alert data
 
         runningWindows.push sandbox
 
