@@ -41,7 +41,9 @@ instances of your app and navigate to different states. Then you can see in real
 time how the css changes affect each one.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">runningWindows = []
+            <div class="content"><pre><code class="lang-coffeescript">Sandbox = require <span class="string">"sandbox"</span>
+
+runningWindows = []
 
 <span class="function"><span class="title">Runner</span></span> = -&gt;
   run: ({config}={}) -&gt;
@@ -90,7 +92,7 @@ time how the css changes affect each one.</p>
     """</span>
 
   hotReloadCSS: (css) -&gt;
-    runningWindows = runningWindows.select (window) -&gt;
+    runningWindows = runningWindows.filter (window) -&gt;
       <span class="keyword">return</span> <span class="literal">false</span> <span class="keyword">if</span> window.closed
 
       <span class="comment"># TODO: We're assuming only one style in the body</span>
@@ -109,15 +111,15 @@ time how the css changes affect each one.</p>
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>Call a global reload method on each running window, passing in the given data.
+              <p>Call a global reload method on each running window, passing in the given args.
 We may want to switch to using <code>postMessage</code> in the future.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">  reload: (data) -&gt;
-    runningWindows = runningWindows.select (window) -&gt;
+            <div class="content"><pre><code class="lang-coffeescript">  reload: (args...) -&gt;
+    runningWindows = runningWindows.filter (window) -&gt;
       <span class="keyword">return</span> <span class="literal">false</span> <span class="keyword">if</span> window.closed
 
-      window.reload?(data)
+      window.reload?(args...)
 
       <span class="keyword">return</span> <span class="literal">true</span>
 
