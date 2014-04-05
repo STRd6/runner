@@ -181,7 +181,7 @@
     "pixie.cson": {
       "path": "pixie.cson",
       "mode": "100644",
-      "content": "version: \"0.2.0\"\nentryPoint: \"runner\"\ndependencies:\n  sandbox: \"distri/sandbox:v0.2.1\"\n",
+      "content": "version: \"0.2.1\"\nentryPoint: \"runner\"\ndependencies:\n  sandbox: \"distri/sandbox:v0.2.1\"\n",
       "type": "blob"
     },
     "runner.coffee.md": {
@@ -200,7 +200,7 @@
   "distribution": {
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.2.0\",\"entryPoint\":\"runner\",\"dependencies\":{\"sandbox\":\"distri/sandbox:v0.2.1\"}};",
+      "content": "module.exports = {\"version\":\"0.2.1\",\"entryPoint\":\"runner\",\"dependencies\":{\"sandbox\":\"distri/sandbox:v0.2.1\"}};",
       "type": "blob"
     },
     "runner": {
@@ -217,7 +217,7 @@
   "progenitor": {
     "url": "http://strd6.github.io/editor/"
   },
-  "version": "0.2.0",
+  "version": "0.2.1",
   "entryPoint": "runner",
   "repository": {
     "id": 13482507,
@@ -364,7 +364,7 @@
         "test/sandbox.coffee": {
           "path": "test/sandbox.coffee",
           "mode": "100644",
-          "content": "Sandbox = require \"../main\"\n\ndescribe \"sandbox\", ->\n  it \"should be able to open a window\", ->\n    sandbox = Sandbox()\n\n    assert sandbox\n\n    sandbox.close()\n",
+          "content": "Sandbox = require \"../main\"\n\ndescribe \"sandbox\", ->\n  it \"should be able to open a window\", ->\n    sandbox = Sandbox()\n\n    assert sandbox\n\n    assert sandbox != window, \"Popup should not be this window\"\n\n    sandbox.close()\n",
           "type": "blob"
         }
       },
@@ -381,7 +381,7 @@
         },
         "test/sandbox": {
           "path": "test/sandbox",
-          "content": "(function() {\n  var Sandbox;\n\n  Sandbox = require(\"../main\");\n\n  describe(\"sandbox\", function() {\n    return it(\"should be able to open a window\", function() {\n      var sandbox;\n      sandbox = Sandbox();\n      assert(sandbox);\n      return sandbox.close();\n    });\n  });\n\n}).call(this);\n",
+          "content": "(function() {\n  var Sandbox;\n\n  Sandbox = require(\"../main\");\n\n  describe(\"sandbox\", function() {\n    return it(\"should be able to open a window\", function() {\n      var sandbox;\n      sandbox = Sandbox();\n      assert(sandbox);\n      assert(sandbox !== window, \"Popup should not be this window\");\n      return sandbox.close();\n    });\n  });\n\n}).call(this);\n",
           "type": "blob"
         }
       },
