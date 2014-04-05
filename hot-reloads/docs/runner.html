@@ -52,6 +52,9 @@ runningWindows = []
     sandbox = Sandbox
       width: width
       height: height
+      methods:
+        reload: (data) -&gt;
+          alert data
 
     runningWindows.push sandbox
 
