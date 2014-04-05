@@ -1,11 +1,18 @@
 Runner = require "../runner"
 
 describe "runner", ->
-  it "should hot reload", ->
+  it "should hot reload", (done) ->
     runner = Runner()
+    r = null
 
-    r = runner.run()
+    setTimeout ->
+      r = runner.run()
+      runner.reload("test")
+      
+      assert r != window, "Popup should not be this window"
+    , 500
 
-    runner.reload("test")
-
-    r.close()
+    setTimeout ->
+      r.close()
+      done()
+    , 1000
