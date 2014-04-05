@@ -62,4 +62,15 @@ Generate an html template that runs the given script tag strings as tests.
 
           return true
 
+Call a global reload method on each running window, passing in the given data.
+We may want to switch to using `postMessage` in the future.
+
+      reload: (data) ->
+        runningWindows = runningWindows.select (window) ->
+          return false if window.closed
+
+          window.reload?(data)
+
+          return true
+
     module.exports = Runner
