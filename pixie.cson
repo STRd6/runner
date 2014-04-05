@@ -1,4 +1,4 @@
-version: "0.2.0"
+version: "0.2.1"
 entryPoint: "runner"
 dependencies:
   sandbox: "distri/sandbox:v0.2.1"
