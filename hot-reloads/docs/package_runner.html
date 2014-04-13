@@ -2,7 +2,7 @@
 
 <html>
 <head>
-  <title>index</title>
+  <title>package_runner</title>
   <meta http-equiv="content-type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
   <link rel="stylesheet" media="all" href="http://strd6.github.io/cdn/parallel/docco.css" />
@@ -18,7 +18,7 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              <h1 id="runner">Runner</h1>
+              <h1 id="package-runner">Package Runner</h1>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">
@@ -32,30 +32,30 @@
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Runner manages running apps in sandboxed windows and passing messages back and
-forth from the parent to the running instances.</p>
-<p>We keep a list of running windows so we can hot-update them when we modify our
-own code.</p>
-<p>One cool example use is if you are modifying your css you can run several
-instances of your app and navigate to different states. Then you can see in real
-time how the css changes affect each one.</p>
+              <p>Run a package in an iframe.</p>
+<p>Reload command will get the state of the app, replace the iframe with a clean
+one, boot the new package and reload the app state.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">Sandbox = require <span class="string">"sandbox"</span>
+            <div class="content"><pre><code class="lang-coffeescript">module.<span class="function"><span class="title">exports</span></span> = (document) -&gt;
+  runningInstance = <span class="literal">null</span>
 
-runningWindows = []
+  launch: (pkg, data) -&gt;
+    <span class="comment"># Get data from running instance</span>
+    data ?= runningInstance.contentWindow?.appData?()
 
-<span class="function"><span class="title">Runner</span></span> = -&gt;
-  run: ({config}={}) -&gt;
-    {width, height} = (config <span class="keyword">or</span> {})
+    <span class="comment"># Remove Running instance</span>
+    runningInstance?.remove()
 
-    sandbox = Sandbox
-      width: width
-      height: height
+    <span class="comment"># Create new instance</span>
+    runningInstance = document.createElement <span class="string">"iframe"</span>
+    document.body.appendChild runningInstance
 
-    runningWindows.push sandbox
+    <span class="comment"># Pass in app state</span>
+    extend runningInstance.contentWindow.ENV ?= {},
+      APP_STATE: data
 
-    <span class="keyword">return</span> sandbox</code></pre>
+    runningInstance.contentWindow.document.write html(pkg)</code></pre>
 </div>
         </li>
         
@@ -65,19 +65,47 @@ runningWindows = []
               <div class="pilwrap">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Call a global reload method on each running window, passing in the given args.
-We may want to switch to using <code>postMessage</code> in the future.</p>
+              <p>A standalone html page for a package.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">  reload: (args...) -&gt;
-    runningWindows = runningWindows.filter (window) -&gt;
-      <span class="keyword">return</span> <span class="literal">false</span> <span class="keyword">if</span> window.closed
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">html</span></span> = (pkg) -&gt;
+  <span class="string">"""
+    &lt;!DOCTYPE html&gt;
+    &lt;html&gt;
+    &lt;head&gt;
+    &lt;meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /&gt;
+    <span class="subst">#{dependencyScripts(pkg.remoteDependencies)}</span>
+    &lt;/head&gt;
+    &lt;body&gt;
+    &lt;script&gt;
+    <span class="subst">#{packageWrapper(pkg, "require('./#{pkg.entryPoint}</span>')")}
+    &lt;\/script&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+  """</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Wrap code in a closure that provides the package and a require function. This
+can be used for generating standalone HTML pages, scripts, and tests.</p>
 
-      window.reload?(args...)
-
-      <span class="keyword">return</span> <span class="literal">true</span>
-
-module.exports = Runner</code></pre>
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">packageWrapper</span></span> = (pkg, code) -&gt;
+  <span class="string">"""
+    ;(function(PACKAGE) {
+    var oldRequire = window.Require;
+    <span class="subst">#{PACKAGE.dependencies.require.distribution.main.content}</span>
+    var require = Require.generateFor(PACKAGE);
+    window.Require = oldRequire;
+    <span class="subst">#{code}</span>
+    })(<span class="subst">#{JSON.stringify(pkg, <span class="literal">null</span>, <span class="number">2</span>)}</span>);
+  """</span></code></pre>
 </div>
         </li>
         

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html manifest="manifest.appcache?1396727093300">
+<html manifest="manifest.appcache?1397424532055">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
@@ -179,56 +179,66 @@ require('./runner')
   "source": {
     "LICENSE": {
       "path": "LICENSE",
-      "mode": "100644",
       "content": "The MIT License (MIT)\n\nCopyright (c) 2013 Daniel X Moore\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of\nthis software and associated documentation files (the \"Software\"), to deal in\nthe Software without restriction, including without limitation the rights to\nuse, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\nthe Software, and to permit persons to whom the Software is furnished to do so,\nsubject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\nFOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\nCOPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\nIN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n",
+      "mode": "100644",
       "type": "blob"
     },
     "README.md": {
       "path": "README.md",
-      "mode": "100644",
       "content": "runner\n======\n\nRunner manages running apps in sandboxed windows and passing messages back and forth from the parent to the running instances.\n",
+      "mode": "100644",
       "type": "blob"
     },
     "pixie.cson": {
       "path": "pixie.cson",
+      "content": "version: \"0.2.2\"\nentryPoint: \"runner\"\ndependencies:\n  sandbox: \"distri/sandbox:v0.2.1\"\n",
       "mode": "100644",
-      "content": "version: \"0.2.1\"\nentryPoint: \"runner\"\ndependencies:\n  sandbox: \"distri/sandbox:v0.2.1\"\n",
       "type": "blob"
     },
     "runner.coffee.md": {
       "path": "runner.coffee.md",
+      "content": "Runner\n======\n\nRunner manages running apps in sandboxed windows and passing messages back and\nforth from the parent to the running instances.\n\nWe keep a list of running windows so we can hot-update them when we modify our\nown code.\n\nOne cool example use is if you are modifying your css you can run several\ninstances of your app and navigate to different states. Then you can see in real\ntime how the css changes affect each one.\n\n    Sandbox = require \"sandbox\"\n\n    runningWindows = []\n\n    Runner = ->\n      run: ({config}={}) ->\n        {width, height} = (config or {})\n\n        sandbox = Sandbox\n          width: width\n          height: height\n\n        runningWindows.push sandbox\n\n        return sandbox\n\nCall a global reload method on each running window, passing in the given args.\nWe may want to switch to using `postMessage` in the future.\n\n      reload: (args...) ->\n        runningWindows = runningWindows.filter (window) ->\n          return false if window.closed\n\n          window.reload?(args...)\n\n          return true\n\n    module.exports = Runner\n",
       "mode": "100644",
-      "content": "Runner\n======\n\nRunner manages running apps in sandboxed windows and passing messages back and\nforth from the parent to the running instances.\n\nWe keep a list of running windows so we can hot-update them when we modify our\nown code.\n\nOne cool example use is if you are modifying your css you can run several\ninstances of your app and navigate to different states. Then you can see in real\ntime how the css changes affect each one.\n\n    Sandbox = require \"sandbox\"\n\n    runningWindows = []\n\n    Runner = ->\n      run: ({config}={}) ->\n        {width, height} = (config or {})\n\n        sandbox = Sandbox\n          width: width\n          height: height\n          methods:\n            reload: (data) ->\n              alert data\n\n        runningWindows.push sandbox\n\n        return sandbox\n\nGenerate an html template that runs the given script tag strings as tests.\n\n      testsHtml: (testScripts) ->\n        \"\"\"\n          <html>\n          <head>\n            <meta charset=\"utf-8\">\n            <title>Mocha Tests</title>\n            <link rel=\"stylesheet\" href=\"http://strd6.github.io/tests/mocha.css\"/>\n          </head>\n          <body>\n            <div id=\"mocha\"></div>\n            <script src=\"http://strd6.github.io/tests/assert.js\"><\\/script>\n            <script src=\"http://strd6.github.io/tests/mocha.js\"><\\/script>\n            <script>mocha.setup('bdd')<\\/script>\n            #{testScripts}\n            <script>\n              mocha.checkLeaks();\n              mocha.globals(['jQuery']);\n              mocha.run();\n            <\\/script>\n          </body>\n          </html>\n        \"\"\"\n\n      hotReloadCSS: (css) ->\n        runningWindows = runningWindows.filter (window) ->\n          return false if window.closed\n\n          # TODO: We're assuming only one style in the body\n          # which is reasonable in most cases, but we may want\n          # to scope it by the path of the specific css file\n          # to handle a wider range of situations\n          $(window.document).find(\"body style:eq(0)\").html(css)\n\n          return true\n\nCall a global reload method on each running window, passing in the given args.\nWe may want to switch to using `postMessage` in the future.\n\n      reload: (args...) ->\n        runningWindows = runningWindows.filter (window) ->\n          return false if window.closed\n\n          window.reload?(args...)\n\n          return true\n\n    module.exports = Runner\n",
       "type": "blob"
     },
     "test/runner.coffee": {
       "path": "test/runner.coffee",
+      "content": "Runner = require \"../runner\"\n\ndescribe \"runner\", ->\n  it \"should hot reload\", (done) ->\n    runner = Runner()\n    r = null\n\n    setTimeout ->\n      r = runner.run()\n      runner.reload(\"test\")\n\n      assert r != window, \"Popup should not be this window\"\n    , 500\n\n    setTimeout ->\n      r.close()\n      done()\n    , 1000\n",
       "mode": "100644",
-      "content": "Runner = require \"../runner\"\n\ndescribe \"runner\", ->\n  it \"should hot reload\", (done) ->\n    runner = Runner()\n    r = null\n\n    setTimeout ->\n      r = runner.run()\n      runner.reload(\"test\")\n      \n      assert r != window, \"Popup should not be this window\"\n    , 500\n\n    setTimeout ->\n      r.close()\n      done()\n    , 1000\n",
       "type": "blob"
+    },
+    "package_runner.coffee.md": {
+      "path": "package_runner.coffee.md",
+      "content": "Package Runner\n==============\n\nRun a package in an iframe.\n\nReload command will get the state of the app, replace the iframe with a clean\none, boot the new package and reload the app state.\n\n    module.exports = (document) ->\n      runningInstance = null\n\n      launch: (pkg, data) ->\n        # Get data from running instance\n        data ?= runningInstance.contentWindow?.appData?()\n\n        # Remove Running instance\n        runningInstance?.remove()\n\n        # Create new instance\n        runningInstance = document.createElement \"iframe\"\n        document.body.appendChild runningInstance\n\n        # Pass in app state\n        extend runningInstance.contentWindow.ENV ?= {},\n          APP_STATE: data\n\n        runningInstance.contentWindow.document.write html(pkg)\n\nA standalone html page for a package.\n\n    html = (pkg) ->\n      \"\"\"\n        <!DOCTYPE html>\n        <html>\n        <head>\n        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n        #{dependencyScripts(pkg.remoteDependencies)}\n        </head>\n        <body>\n        <script>\n        #{packageWrapper(pkg, \"require('./#{pkg.entryPoint}')\")}\n        <\\/script>\n        </body>\n        </html>\n      \"\"\"\n\nWrap code in a closure that provides the package and a require function. This\ncan be used for generating standalone HTML pages, scripts, and tests.\n\n    packageWrapper = (pkg, code) ->\n      \"\"\"\n        ;(function(PACKAGE) {\n        var oldRequire = window.Require;\n        #{PACKAGE.dependencies.require.distribution.main.content}\n        var require = Require.generateFor(PACKAGE);\n        window.Require = oldRequire;\n        #{code}\n        })(#{JSON.stringify(pkg, null, 2)});\n      \"\"\"\n",
+      "mode": "100644"
     }
   },
   "distribution": {
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.2.1\",\"entryPoint\":\"runner\",\"dependencies\":{\"sandbox\":\"distri/sandbox:v0.2.1\"}};",
+      "content": "module.exports = {\"version\":\"0.2.2\",\"entryPoint\":\"runner\",\"dependencies\":{\"sandbox\":\"distri/sandbox:v0.2.1\"}};",
       "type": "blob"
     },
     "runner": {
       "path": "runner",
-      "content": "(function() {\n  var Runner, Sandbox, runningWindows,\n    __slice = [].slice;\n\n  Sandbox = require(\"sandbox\");\n\n  runningWindows = [];\n\n  Runner = function() {\n    return {\n      run: function(_arg) {\n        var config, height, sandbox, width, _ref;\n        config = (_arg != null ? _arg : {}).config;\n        _ref = config || {}, width = _ref.width, height = _ref.height;\n        sandbox = Sandbox({\n          width: width,\n          height: height,\n          methods: {\n            reload: function(data) {\n              return alert(data);\n            }\n          }\n        });\n        runningWindows.push(sandbox);\n        return sandbox;\n      },\n      testsHtml: function(testScripts) {\n        return \"<html>\\n<head>\\n  <meta charset=\\\"utf-8\\\">\\n  <title>Mocha Tests</title>\\n  <link rel=\\\"stylesheet\\\" href=\\\"http://strd6.github.io/tests/mocha.css\\\"/>\\n</head>\\n<body>\\n  <div id=\\\"mocha\\\"></div>\\n  <script src=\\\"http://strd6.github.io/tests/assert.js\\\"><\\/script>\\n  <script src=\\\"http://strd6.github.io/tests/mocha.js\\\"><\\/script>\\n  <script>mocha.setup('bdd')<\\/script>\\n  \" + testScripts + \"\\n  <script>\\n    mocha.checkLeaks();\\n    mocha.globals(['jQuery']);\\n    mocha.run();\\n  <\\/script>\\n</body>\\n</html>\";\n      },\n      hotReloadCSS: function(css) {\n        return runningWindows = runningWindows.filter(function(window) {\n          if (window.closed) {\n            return false;\n          }\n          $(window.document).find(\"body style:eq(0)\").html(css);\n          return true;\n        });\n      },\n      reload: function() {\n        var args;\n        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];\n        return runningWindows = runningWindows.filter(function(window) {\n          if (window.closed) {\n            return false;\n          }\n          if (typeof window.reload === \"function\") {\n            window.reload.apply(window, args);\n          }\n          return true;\n        });\n      }\n    };\n  };\n\n  module.exports = Runner;\n\n}).call(this);\n",
+      "content": "(function() {\n  var Runner, Sandbox, runningWindows,\n    __slice = [].slice;\n\n  Sandbox = require(\"sandbox\");\n\n  runningWindows = [];\n\n  Runner = function() {\n    return {\n      run: function(_arg) {\n        var config, height, sandbox, width, _ref;\n        config = (_arg != null ? _arg : {}).config;\n        _ref = config || {}, width = _ref.width, height = _ref.height;\n        sandbox = Sandbox({\n          width: width,\n          height: height\n        });\n        runningWindows.push(sandbox);\n        return sandbox;\n      },\n      reload: function() {\n        var args;\n        args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];\n        return runningWindows = runningWindows.filter(function(window) {\n          if (window.closed) {\n            return false;\n          }\n          if (typeof window.reload === \"function\") {\n            window.reload.apply(window, args);\n          }\n          return true;\n        });\n      }\n    };\n  };\n\n  module.exports = Runner;\n\n}).call(this);\n",
       "type": "blob"
     },
     "test/runner": {
       "path": "test/runner",
       "content": "(function() {\n  var Runner;\n\n  Runner = require(\"../runner\");\n\n  describe(\"runner\", function() {\n    return it(\"should hot reload\", function(done) {\n      var r, runner;\n      runner = Runner();\n      r = null;\n      setTimeout(function() {\n        r = runner.run();\n        runner.reload(\"test\");\n        return assert(r !== window, \"Popup should not be this window\");\n      }, 500);\n      return setTimeout(function() {\n        r.close();\n        return done();\n      }, 1000);\n    });\n  });\n\n}).call(this);\n",
       "type": "blob"
+    },
+    "package_runner": {
+      "path": "package_runner",
+      "content": "(function() {\n  var html, packageWrapper;\n\n  module.exports = function(document) {\n    var runningInstance;\n    runningInstance = null;\n    return {\n      launch: function(pkg, data) {\n        var _base, _ref;\n        if (data == null) {\n          data = (_ref = runningInstance.contentWindow) != null ? typeof _ref.appData === \"function\" ? _ref.appData() : void 0 : void 0;\n        }\n        if (runningInstance != null) {\n          runningInstance.remove();\n        }\n        runningInstance = document.createElement(\"iframe\");\n        document.body.appendChild(runningInstance);\n        extend((_base = runningInstance.contentWindow).ENV != null ? (_base = runningInstance.contentWindow).ENV : _base.ENV = {}, {\n          APP_STATE: data\n        });\n        return runningInstance.contentWindow.document.write(html(pkg));\n      }\n    };\n  };\n\n  html = function(pkg) {\n    return \"<!DOCTYPE html>\\n<html>\\n<head>\\n<meta http-equiv=\\\"Content-Type\\\" content=\\\"text/html; charset=UTF-8\\\" />\\n\" + (dependencyScripts(pkg.remoteDependencies)) + \"\\n</head>\\n<body>\\n<script>\\n\" + (packageWrapper(pkg, \"require('./\" + pkg.entryPoint + \"')\")) + \"\\n<\\/script>\\n</body>\\n</html>\";\n  };\n\n  packageWrapper = function(pkg, code) {\n    return \";(function(PACKAGE) {\\nvar oldRequire = window.Require;\\n\" + PACKAGE.dependencies.require.distribution.main.content + \"\\nvar require = Require.generateFor(PACKAGE);\\nwindow.Require = oldRequire;\\n\" + code + \"\\n})(\" + (JSON.stringify(pkg, null, 2)) + \");\";\n  };\n\n}).call(this);\n",
+      "type": "blob"
     }
   },
   "progenitor": {
-    "url": "http://strd6.github.io/editor/"
+    "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.2.1",
+  "version": "0.2.2",
   "entryPoint": "runner",
   "repository": {
     "id": 13482507,
@@ -294,14 +304,14 @@ require('./runner')
     "labels_url": "https://api.github.com/repos/distri/runner/labels{/name}",
     "releases_url": "https://api.github.com/repos/distri/runner/releases{/id}",
     "created_at": "2013-10-10T20:42:25Z",
-    "updated_at": "2014-04-05T16:37:55Z",
-    "pushed_at": "2014-04-05T16:37:12Z",
+    "updated_at": "2014-04-05T19:47:47Z",
+    "pushed_at": "2014-04-05T19:47:48Z",
     "git_url": "git://github.com/distri/runner.git",
     "ssh_url": "git@github.com:distri/runner.git",
     "clone_url": "https://github.com/distri/runner.git",
     "svn_url": "https://github.com/distri/runner",
     "homepage": null,
-    "size": 156,
+    "size": 280,
     "stargazers_count": 0,
     "watchers_count": 0,
     "language": "CoffeeScript",
