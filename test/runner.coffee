@@ -8,7 +8,7 @@ describe "runner", ->
     setTimeout ->
       r = runner.run()
       runner.reload("test")
-      
+
       assert r != window, "Popup should not be this window"
     , 500
 

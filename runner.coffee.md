@@ -27,43 +27,6 @@ time how the css changes affect each one.
 
         return sandbox
 
-Generate an html template that runs the given script tag strings as tests.
-
-      testsHtml: (testScripts) ->
-        """
-          <html>
-          <head>
-            <meta charset="utf-8">
-            <title>Mocha Tests</title>
-            <link rel="stylesheet" href="http://strd6.github.io/tests/mocha.css"/>
-          </head>
-          <body>
-            <div id="mocha"></div>
-            <script src="http://strd6.github.io/tests/assert.js"><\/script>
-            <script src="http://strd6.github.io/tests/mocha.js"><\/script>
-            <script>mocha.setup('bdd')<\/script>
-            #{testScripts}
-            <script>
-              mocha.checkLeaks();
-              mocha.globals(['jQuery']);
-              mocha.run();
-            <\/script>
-          </body>
-          </html>
-        """
-
-      hotReloadCSS: (css) ->
-        runningWindows = runningWindows.filter (window) ->
-          return false if window.closed
-
-          # TODO: We're assuming only one style in the body
-          # which is reasonable in most cases, but we may want
-          # to scope it by the path of the specific css file
-          # to handle a wider range of situations
-          $(window.document).find("body style:eq(0)").html(css)
-
-          return true
-
 Call a global reload method on each running window, passing in the given args.
 We may want to switch to using `postMessage` in the future.
 
