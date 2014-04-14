@@ -81,7 +81,7 @@ the remote script dependencies of this build.
     dependencyScripts = (remoteDependencies=[]) ->
       remoteDependencies.map(makeScript).join("\n")
 
-    applyStylesheet: (document, style, id="primary") ->
+    applyStylesheet = (document, style, id="primary") ->
       styleNode = document.createElement("style")
       styleNode.innerHTML = style
       styleNode.id = id
