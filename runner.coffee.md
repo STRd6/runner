@@ -38,4 +38,6 @@ We may want to switch to using `postMessage` in the future.
 
           return true
 
+    Runner.PackageRunner = require "./package_runner"
+
     module.exports = Runner

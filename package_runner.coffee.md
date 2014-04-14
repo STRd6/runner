@@ -6,25 +6,30 @@ Run a package in an iframe.
 Reload command will get the state of the app, replace the iframe with a clean
 one, boot the new package and reload the app state.
 
+When given a document the package runner
+
     module.exports = (document) ->
       runningInstance = null
 
-      launch: (pkg, data) ->
-        # Get data from running instance
-        data ?= runningInstance.contentWindow?.appData?()
+      self =
+        launch: (pkg, data) ->
+          # Get data from running instance
+          data ?= runningInstance.contentWindow?.appData?()
 
-        # Remove Running instance
-        runningInstance?.remove()
+          # Remove Running instance
+          runningInstance?.remove()
 
-        # Create new instance
-        runningInstance = document.createElement "iframe"
-        document.body.appendChild runningInstance
+          # Create new instance
+          runningInstance = document.createElement "iframe"
+          document.body.appendChild runningInstance
 
-        # Pass in app state
-        extend runningInstance.contentWindow.ENV ?= {},
-          APP_STATE: data
+          # Pass in app state
+          extend runningInstance.contentWindow.ENV ?= {},
+            APP_STATE: data
 
-        runningInstance.contentWindow.document.write html(pkg)
+          runningInstance.contentWindow.document.write html(pkg)
+
+          return self
 
 A standalone html page for a package.
 
@@ -57,3 +62,18 @@ can be used for generating standalone HTML pages, scripts, and tests.
         #{code}
         })(#{JSON.stringify(pkg, null, 2)});
       """
+
+Helpers
+-------
+
+`makeScript` returns a string representation of a script tag that has a src
+attribute.
+
+    makeScript = (src) ->
+      "<script src=#{JSON.stringify(src)}><\/script>"
+
+`dependencyScripts` returns a string containing the script tags that are
+the remote script dependencies of this build.
+
+    dependencyScripts = (remoteDependencies=[]) ->
+      remoteDependencies.map(makeScript).join("\n")
