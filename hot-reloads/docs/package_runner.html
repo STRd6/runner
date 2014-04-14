@@ -35,27 +35,31 @@
               <p>Run a package in an iframe.</p>
 <p>Reload command will get the state of the app, replace the iframe with a clean
 one, boot the new package and reload the app state.</p>
+<p>When given a document the package runner</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript">module.<span class="function"><span class="title">exports</span></span> = (document) -&gt;
   runningInstance = <span class="literal">null</span>
 
-  launch: (pkg, data) -&gt;
-    <span class="comment"># Get data from running instance</span>
-    data ?= runningInstance.contentWindow?.appData?()
+  self =
+    launch: (pkg, data) -&gt;
+      <span class="comment"># Get data from running instance</span>
+      data ?= runningInstance.contentWindow?.appData?()
 
-    <span class="comment"># Remove Running instance</span>
-    runningInstance?.remove()
+      <span class="comment"># Remove Running instance</span>
+      runningInstance?.remove()
 
-    <span class="comment"># Create new instance</span>
-    runningInstance = document.createElement <span class="string">"iframe"</span>
-    document.body.appendChild runningInstance
+      <span class="comment"># Create new instance</span>
+      runningInstance = document.createElement <span class="string">"iframe"</span>
+      document.body.appendChild runningInstance
 
-    <span class="comment"># Pass in app state</span>
-    extend runningInstance.contentWindow.ENV ?= {},
-      APP_STATE: data
+      <span class="comment"># Pass in app state</span>
+      extend runningInstance.contentWindow.ENV ?= {},
+        APP_STATE: data
 
-    runningInstance.contentWindow.document.write html(pkg)</code></pre>
+      runningInstance.contentWindow.document.write html(pkg)
+
+      <span class="keyword">return</span> self</code></pre>
 </div>
         </li>
         
@@ -106,6 +110,50 @@ can be used for generating standalone HTML pages, scripts, and tests.</p>
     <span class="subst">#{code}</span>
     })(<span class="subst">#{JSON.stringify(pkg, <span class="literal">null</span>, <span class="number">2</span>)}</span>);
   """</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h2 id="helpers">Helpers</h2>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">
+</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p><code>makeScript</code> returns a string representation of a script tag that has a src
+attribute.</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">makeScript</span></span> = (src) -&gt;
+  <span class="string">"&lt;script src=<span class="subst">#{JSON.stringify(src)}</span>&gt;&lt;\/script&gt;"</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p><code>dependencyScripts</code> returns a string containing the script tags that are
+the remote script dependencies of this build.</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">dependencyScripts</span></span> = (remoteDependencies=[]) -&gt;
+  remoteDependencies.map(makeScript).join(<span class="string">"\n"</span>)</code></pre>
 </div>
         </li>
         
