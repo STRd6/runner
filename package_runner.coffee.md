@@ -8,6 +8,8 @@ one, boot the new package and reload the app state.
 
 When given a document the package runner
 
+    {extend} = require "util"
+
     module.exports = (document) ->
       runningInstance = null
 
