@@ -20,7 +20,7 @@ window["distri/runner:v0.2.3-pre.5"]({
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.2.3-pre.5\"\nentryPoint: \"runner\"\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  sandbox: \"distri/sandbox:v0.2.2-pre.0\"\n  util: \"distri/util:v0.1.0\"\n",
+      "content": "version: \"0.2.3-pre.6\"\nentryPoint: \"runner\"\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  sandbox: \"distri/sandbox:v0.2.2-pre.0\"\n  util: \"distri/util:v0.1.0\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -38,7 +38,7 @@ window["distri/runner:v0.2.3-pre.5"]({
     },
     "style.styl": {
       "path": "style.styl",
-      "content": "body\n  height: 100%\n  margin: 0\n\nhtml\n  height: 100%\n\niframe\n  height: 100%\n  width: 100%\n",
+      "content": "body\n  height: 100%\n  margin: 0\n\nhtml\n  height: 100%\n\niframe\n  border: none\n  height: 100%\n  width: 100%\n",
       "mode": "100644"
     }
   },
@@ -50,7 +50,7 @@ window["distri/runner:v0.2.3-pre.5"]({
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.2.3-pre.5\",\"entryPoint\":\"runner\",\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"sandbox\":\"distri/sandbox:v0.2.2-pre.0\",\"util\":\"distri/util:v0.1.0\"}};",
+      "content": "module.exports = {\"version\":\"0.2.3-pre.6\",\"entryPoint\":\"runner\",\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"sandbox\":\"distri/sandbox:v0.2.2-pre.0\",\"util\":\"distri/util:v0.1.0\"}};",
       "type": "blob"
     },
     "runner": {
@@ -65,14 +65,14 @@ window["distri/runner:v0.2.3-pre.5"]({
     },
     "style": {
       "path": "style",
-      "content": "module.exports = \"body {\\n  height: 100%;\\n  margin: 0;\\n}\\n\\nhtml {\\n  height: 100%;\\n}\\n\\niframe {\\n  height: 100%;\\n  width: 100%;\\n}\";",
+      "content": "module.exports = \"body {\\n  height: 100%;\\n  margin: 0;\\n}\\n\\nhtml {\\n  height: 100%;\\n}\\n\\niframe {\\n  border: none;\\n  height: 100%;\\n  width: 100%;\\n}\";",
       "type": "blob"
     }
   },
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.2.3-pre.5",
+  "version": "0.2.3-pre.6",
   "entryPoint": "runner",
   "repository": {
     "id": 13482507,
