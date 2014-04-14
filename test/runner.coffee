@@ -1,18 +1,33 @@
 Runner = require "../runner"
 
 describe "runner", ->
-  it "should hot reload", (done) ->
+  it "should launch windows", (done) ->
     runner = Runner()
     r = null
 
     setTimeout ->
       r = runner.run()
-      runner.reload("test")
 
       assert r != window, "Popup should not be this window"
-    , 500
+    , 100
 
     setTimeout ->
       r.close()
+      done()
+    , 200
+
+describe "PackageRunner", ->
+  it "should launch and run packages", (done) ->
+    {PackageRunner} = Runner
+    runner = Runner()
+
+    sandbox = runner.run()
+    
+    launcher = PackageRunner(sandbox.document)
+
+    launcher.launch(PACKAGE)
+
+    setTimeout ->
+      sandbox.close()
       done()
     , 1000

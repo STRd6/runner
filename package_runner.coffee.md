@@ -3,10 +3,16 @@ Package Runner
 
 Run a package in an iframe.
 
-Reload command will get the state of the app, replace the iframe with a clean
-one, boot the new package and reload the app state.
+The `launch` command will get the state of the app, replace the iframe with a clean
+one, boot the new package and reload the app state. You can also optionally pass
+in an app state to launch into.
 
-When given a document the package runner
+One example use of hot reloading is if you are modifying your css you can run
+several instances of your app and navigate to different states. Then you can see
+in real time how the css changes affect each one.
+
+The package runner assumes that it has total control over the document so you
+probably won't want to give it the one in your own window.
 
     {extend} = require "util"
 
