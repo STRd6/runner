@@ -11,6 +11,7 @@ When given a document the package runner
     {extend} = require "util"
 
     module.exports = (document) ->
+      applyStylesheet document, require "./style"
       runningInstance = null
 
       self =
@@ -79,3 +80,13 @@ the remote script dependencies of this build.
 
     dependencyScripts = (remoteDependencies=[]) ->
       remoteDependencies.map(makeScript).join("\n")
+
+    applyStylesheet: (document, style, id="primary") ->
+      styleNode = document.createElement("style")
+      styleNode.innerHTML = style
+      styleNode.id = id
+  
+      if previousStyleNode = document.head.querySelector("style##{id}")
+        previousStyleNode.parentNode.removeChild(prevousStyleNode)
+  
+      document.head.appendChild(styleNode)
