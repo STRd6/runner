@@ -14,13 +14,13 @@ window["distri/runner:v0.2.3-pre.2"]({
     },
     "package_runner.coffee.md": {
       "path": "package_runner.coffee.md",
-      "content": "Package Runner\n==============\n\nRun a package in an iframe.\n\nReload command will get the state of the app, replace the iframe with a clean\none, boot the new package and reload the app state.\n\nWhen given a document the package runner\n\n    module.exports = (document) ->\n      runningInstance = null\n\n      self =\n        launch: (pkg, data) ->\n          # Get data from running instance\n          data ?= runningInstance?.contentWindow?.appData?()\n\n          # Remove Running instance\n          runningInstance?.remove()\n\n          # Create new instance\n          runningInstance = document.createElement \"iframe\"\n          document.body.appendChild runningInstance\n\n          # Pass in app state\n          extend runningInstance.contentWindow.ENV ?= {},\n            APP_STATE: data\n\n          runningInstance.contentWindow.document.write html(pkg)\n\n          return self\n\nA standalone html page for a package.\n\n    html = (pkg) ->\n      \"\"\"\n        <!DOCTYPE html>\n        <html>\n        <head>\n        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n        #{dependencyScripts(pkg.remoteDependencies)}\n        </head>\n        <body>\n        <script>\n        #{packageWrapper(pkg, \"require('./#{pkg.entryPoint}')\")}\n        <\\/script>\n        </body>\n        </html>\n      \"\"\"\n\nWrap code in a closure that provides the package and a require function. This\ncan be used for generating standalone HTML pages, scripts, and tests.\n\n    packageWrapper = (pkg, code) ->\n      \"\"\"\n        ;(function(PACKAGE) {\n        var oldRequire = window.Require;\n        #{PACKAGE.dependencies.require.distribution.main.content}\n        var require = Require.generateFor(PACKAGE);\n        window.Require = oldRequire;\n        #{code}\n        })(#{JSON.stringify(pkg, null, 2)});\n      \"\"\"\n\nHelpers\n-------\n\n`makeScript` returns a string representation of a script tag that has a src\nattribute.\n\n    makeScript = (src) ->\n      \"<script src=#{JSON.stringify(src)}><\\/script>\"\n\n`dependencyScripts` returns a string containing the script tags that are\nthe remote script dependencies of this build.\n\n    dependencyScripts = (remoteDependencies=[]) ->\n      remoteDependencies.map(makeScript).join(\"\\n\")\n",
+      "content": "Package Runner\n==============\n\nRun a package in an iframe.\n\nReload command will get the state of the app, replace the iframe with a clean\none, boot the new package and reload the app state.\n\nWhen given a document the package runner\n\n    {extend} = require \"util\"\n\n    module.exports = (document) ->\n      runningInstance = null\n\n      self =\n        launch: (pkg, data) ->\n          # Get data from running instance\n          data ?= runningInstance?.contentWindow?.appData?()\n\n          # Remove Running instance\n          runningInstance?.remove()\n\n          # Create new instance\n          runningInstance = document.createElement \"iframe\"\n          document.body.appendChild runningInstance\n\n          # Pass in app state\n          extend runningInstance.contentWindow.ENV ?= {},\n            APP_STATE: data\n\n          runningInstance.contentWindow.document.write html(pkg)\n\n          return self\n\nA standalone html page for a package.\n\n    html = (pkg) ->\n      \"\"\"\n        <!DOCTYPE html>\n        <html>\n        <head>\n        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n        #{dependencyScripts(pkg.remoteDependencies)}\n        </head>\n        <body>\n        <script>\n        #{packageWrapper(pkg, \"require('./#{pkg.entryPoint}')\")}\n        <\\/script>\n        </body>\n        </html>\n      \"\"\"\n\nWrap code in a closure that provides the package and a require function. This\ncan be used for generating standalone HTML pages, scripts, and tests.\n\n    packageWrapper = (pkg, code) ->\n      \"\"\"\n        ;(function(PACKAGE) {\n        var oldRequire = window.Require;\n        #{PACKAGE.dependencies.require.distribution.main.content}\n        var require = Require.generateFor(PACKAGE);\n        window.Require = oldRequire;\n        #{code}\n        })(#{JSON.stringify(pkg, null, 2)});\n      \"\"\"\n\nHelpers\n-------\n\n`makeScript` returns a string representation of a script tag that has a src\nattribute.\n\n    makeScript = (src) ->\n      \"<script src=#{JSON.stringify(src)}><\\/script>\"\n\n`dependencyScripts` returns a string containing the script tags that are\nthe remote script dependencies of this build.\n\n    dependencyScripts = (remoteDependencies=[]) ->\n      remoteDependencies.map(makeScript).join(\"\\n\")\n",
       "mode": "100644",
       "type": "blob"
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.2.3-pre.2\"\nentryPoint: \"runner\"\ndependencies:\n  sandbox: \"distri/sandbox:v0.2.2-pre.0\"\n  require: \"distri/require:v0.4.2\"\n",
+      "content": "version: \"0.2.3-pre.3\"\nentryPoint: \"runner\"\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  sandbox: \"distri/sandbox:v0.2.2-pre.0\"\n  util: \"distri/util:v0.1.0\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -40,12 +40,12 @@ window["distri/runner:v0.2.3-pre.2"]({
   "distribution": {
     "package_runner": {
       "path": "package_runner",
-      "content": "(function() {\n  var dependencyScripts, html, makeScript, packageWrapper;\n\n  module.exports = function(document) {\n    var runningInstance, self;\n    runningInstance = null;\n    return self = {\n      launch: function(pkg, data) {\n        var _base, _ref;\n        if (data == null) {\n          data = runningInstance != null ? (_ref = runningInstance.contentWindow) != null ? typeof _ref.appData === \"function\" ? _ref.appData() : void 0 : void 0 : void 0;\n        }\n        if (runningInstance != null) {\n          runningInstance.remove();\n        }\n        runningInstance = document.createElement(\"iframe\");\n        document.body.appendChild(runningInstance);\n        extend((_base = runningInstance.contentWindow).ENV != null ? (_base = runningInstance.contentWindow).ENV : _base.ENV = {}, {\n          APP_STATE: data\n        });\n        runningInstance.contentWindow.document.write(html(pkg));\n        return self;\n      }\n    };\n  };\n\n  html = function(pkg) {\n    return \"<!DOCTYPE html>\\n<html>\\n<head>\\n<meta http-equiv=\\\"Content-Type\\\" content=\\\"text/html; charset=UTF-8\\\" />\\n\" + (dependencyScripts(pkg.remoteDependencies)) + \"\\n</head>\\n<body>\\n<script>\\n\" + (packageWrapper(pkg, \"require('./\" + pkg.entryPoint + \"')\")) + \"\\n<\\/script>\\n</body>\\n</html>\";\n  };\n\n  packageWrapper = function(pkg, code) {\n    return \";(function(PACKAGE) {\\nvar oldRequire = window.Require;\\n\" + PACKAGE.dependencies.require.distribution.main.content + \"\\nvar require = Require.generateFor(PACKAGE);\\nwindow.Require = oldRequire;\\n\" + code + \"\\n})(\" + (JSON.stringify(pkg, null, 2)) + \");\";\n  };\n\n  makeScript = function(src) {\n    return \"<script src=\" + (JSON.stringify(src)) + \"><\\/script>\";\n  };\n\n  dependencyScripts = function(remoteDependencies) {\n    if (remoteDependencies == null) {\n      remoteDependencies = [];\n    }\n    return remoteDependencies.map(makeScript).join(\"\\n\");\n  };\n\n}).call(this);\n",
+      "content": "(function() {\n  var dependencyScripts, extend, html, makeScript, packageWrapper;\n\n  extend = require(\"util\").extend;\n\n  module.exports = function(document) {\n    var runningInstance, self;\n    runningInstance = null;\n    return self = {\n      launch: function(pkg, data) {\n        var _base, _ref;\n        if (data == null) {\n          data = runningInstance != null ? (_ref = runningInstance.contentWindow) != null ? typeof _ref.appData === \"function\" ? _ref.appData() : void 0 : void 0 : void 0;\n        }\n        if (runningInstance != null) {\n          runningInstance.remove();\n        }\n        runningInstance = document.createElement(\"iframe\");\n        document.body.appendChild(runningInstance);\n        extend((_base = runningInstance.contentWindow).ENV != null ? (_base = runningInstance.contentWindow).ENV : _base.ENV = {}, {\n          APP_STATE: data\n        });\n        runningInstance.contentWindow.document.write(html(pkg));\n        return self;\n      }\n    };\n  };\n\n  html = function(pkg) {\n    return \"<!DOCTYPE html>\\n<html>\\n<head>\\n<meta http-equiv=\\\"Content-Type\\\" content=\\\"text/html; charset=UTF-8\\\" />\\n\" + (dependencyScripts(pkg.remoteDependencies)) + \"\\n</head>\\n<body>\\n<script>\\n\" + (packageWrapper(pkg, \"require('./\" + pkg.entryPoint + \"')\")) + \"\\n<\\/script>\\n</body>\\n</html>\";\n  };\n\n  packageWrapper = function(pkg, code) {\n    return \";(function(PACKAGE) {\\nvar oldRequire = window.Require;\\n\" + PACKAGE.dependencies.require.distribution.main.content + \"\\nvar require = Require.generateFor(PACKAGE);\\nwindow.Require = oldRequire;\\n\" + code + \"\\n})(\" + (JSON.stringify(pkg, null, 2)) + \");\";\n  };\n\n  makeScript = function(src) {\n    return \"<script src=\" + (JSON.stringify(src)) + \"><\\/script>\";\n  };\n\n  dependencyScripts = function(remoteDependencies) {\n    if (remoteDependencies == null) {\n      remoteDependencies = [];\n    }\n    return remoteDependencies.map(makeScript).join(\"\\n\");\n  };\n\n}).call(this);\n",
       "type": "blob"
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.2.3-pre.2\",\"entryPoint\":\"runner\",\"dependencies\":{\"sandbox\":\"distri/sandbox:v0.2.2-pre.0\",\"require\":\"distri/require:v0.4.2\"}};",
+      "content": "module.exports = {\"version\":\"0.2.3-pre.3\",\"entryPoint\":\"runner\",\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"sandbox\":\"distri/sandbox:v0.2.2-pre.0\",\"util\":\"distri/util:v0.1.0\"}};",
       "type": "blob"
     },
     "runner": {
@@ -62,7 +62,7 @@ window["distri/runner:v0.2.3-pre.2"]({
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.2.3-pre.2",
+  "version": "0.2.3-pre.3",
   "entryPoint": "runner",
   "repository": {
     "id": 13482507,
@@ -180,178 +180,6 @@ window["distri/runner:v0.2.3-pre.2"]({
     "publishBranch": "gh-pages"
   },
   "dependencies": {
-    "sandbox": {
-      "source": {
-        "LICENSE": {
-          "path": "LICENSE",
-          "content": "The MIT License (MIT)\n\nCopyright (c) 2013 Daniel X Moore\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of\nthis software and associated documentation files (the \"Software\"), to deal in\nthe Software without restriction, including without limitation the rights to\nuse, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\nthe Software, and to permit persons to whom the Software is furnished to do so,\nsubject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\nFOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\nCOPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\nIN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n",
-          "mode": "100644",
-          "type": "blob"
-        },
-        "README.md": {
-          "path": "README.md",
-          "content": "sandbox\n=======\n\nRun code in a popup window filled with sand.\n",
-          "mode": "100644",
-          "type": "blob"
-        },
-        "main.coffee.md": {
-          "path": "main.coffee.md",
-          "content": "Sandbox\n=======\n\nSandbox creates a popup window in which you can run code.\n\nYou can pass in a width and a height to set the size of the window.\n\n    module.exports = ({name, width, height, methods}={}) ->\n      name ?= \"sandbox\" + new Date\n      width ?= 800\n      height ?= 600\n      methods ?= {}\n\n      sandbox = window.open(\n        \"\"\n        name\n        \"width=#{width},height=#{height}\"\n      )\n\nPass in functions to attach to the running window. Useful for things like\n`onerror` or other utilities if you would like the running code to be able to\ncommunicate back to the parent.\n\n      extend sandbox, methods\n\n      autoClose(sandbox)\n\nThe newly created window is returned.\n\n      return sandbox\n\nHelpers\n-------\n\n    extend = (target, sources...) ->\n      for source in sources\n        for name of source\n          target[name] = source[name]\n\n      return target\n\nClose sandbox when closing our window.\n\n    autoClose = (sandbox) ->\n      closer = ->\n        window.removeEventListener \"unload\", closer\n        widget.close()\n\n      sandbox.addEventListener \"unload\", closer\n      window.addEventListener \"unload\", closer\n",
-          "mode": "100644",
-          "type": "blob"
-        },
-        "pixie.cson": {
-          "path": "pixie.cson",
-          "content": "version: \"0.2.2-pre.0\"\n",
-          "mode": "100644",
-          "type": "blob"
-        },
-        "test/sandbox.coffee": {
-          "path": "test/sandbox.coffee",
-          "content": "Sandbox = require \"../main\"\n\ndescribe \"sandbox\", ->\n  it \"should be able to open a window\", ->\n    sandbox = Sandbox()\n\n    assert sandbox\n\n    assert sandbox != window, \"Popup should not be this window\"\n\n    sandbox.close()\n",
-          "mode": "100644",
-          "type": "blob"
-        }
-      },
-      "distribution": {
-        "main": {
-          "path": "main",
-          "content": "(function() {\n  var autoClose, extend,\n    __slice = [].slice;\n\n  module.exports = function(_arg) {\n    var height, methods, name, sandbox, width, _ref;\n    _ref = _arg != null ? _arg : {}, name = _ref.name, width = _ref.width, height = _ref.height, methods = _ref.methods;\n    if (name == null) {\n      name = \"sandbox\" + new Date;\n    }\n    if (width == null) {\n      width = 800;\n    }\n    if (height == null) {\n      height = 600;\n    }\n    if (methods == null) {\n      methods = {};\n    }\n    sandbox = window.open(\"\", name, \"width=\" + width + \",height=\" + height);\n    extend(sandbox, methods);\n    autoClose(sandbox);\n    return sandbox;\n  };\n\n  extend = function() {\n    var name, source, sources, target, _i, _len;\n    target = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];\n    for (_i = 0, _len = sources.length; _i < _len; _i++) {\n      source = sources[_i];\n      for (name in source) {\n        target[name] = source[name];\n      }\n    }\n    return target;\n  };\n\n  autoClose = function(sandbox) {\n    var closer;\n    closer = function() {\n      window.removeEventListener(\"unload\", closer);\n      return widget.close();\n    };\n    sandbox.addEventListener(\"unload\", closer);\n    return window.addEventListener(\"unload\", closer);\n  };\n\n}).call(this);\n",
-          "type": "blob"
-        },
-        "pixie": {
-          "path": "pixie",
-          "content": "module.exports = {\"version\":\"0.2.2-pre.0\"};",
-          "type": "blob"
-        },
-        "test/sandbox": {
-          "path": "test/sandbox",
-          "content": "(function() {\n  var Sandbox;\n\n  Sandbox = require(\"../main\");\n\n  describe(\"sandbox\", function() {\n    return it(\"should be able to open a window\", function() {\n      var sandbox;\n      sandbox = Sandbox();\n      assert(sandbox);\n      assert(sandbox !== window, \"Popup should not be this window\");\n      return sandbox.close();\n    });\n  });\n\n}).call(this);\n",
-          "type": "blob"
-        }
-      },
-      "progenitor": {
-        "url": "http://www.danielx.net/editor/"
-      },
-      "version": "0.2.2-pre.0",
-      "entryPoint": "main",
-      "repository": {
-        "id": 12746310,
-        "name": "sandbox",
-        "full_name": "distri/sandbox",
-        "owner": {
-          "login": "distri",
-          "id": 6005125,
-          "avatar_url": "https://avatars.githubusercontent.com/u/6005125?",
-          "gravatar_id": "192f3f168409e79c42107f081139d9f3",
-          "url": "https://api.github.com/users/distri",
-          "html_url": "https://github.com/distri",
-          "followers_url": "https://api.github.com/users/distri/followers",
-          "following_url": "https://api.github.com/users/distri/following{/other_user}",
-          "gists_url": "https://api.github.com/users/distri/gists{/gist_id}",
-          "starred_url": "https://api.github.com/users/distri/starred{/owner}{/repo}",
-          "subscriptions_url": "https://api.github.com/users/distri/subscriptions",
-          "organizations_url": "https://api.github.com/users/distri/orgs",
-          "repos_url": "https://api.github.com/users/distri/repos",
-          "events_url": "https://api.github.com/users/distri/events{/privacy}",
-          "received_events_url": "https://api.github.com/users/distri/received_events",
-          "type": "Organization",
-          "site_admin": false
-        },
-        "private": false,
-        "html_url": "https://github.com/distri/sandbox",
-        "description": "Run code in a popup window filled with sand.",
-        "fork": false,
-        "url": "https://api.github.com/repos/distri/sandbox",
-        "forks_url": "https://api.github.com/repos/distri/sandbox/forks",
-        "keys_url": "https://api.github.com/repos/distri/sandbox/keys{/key_id}",
-        "collaborators_url": "https://api.github.com/repos/distri/sandbox/collaborators{/collaborator}",
-        "teams_url": "https://api.github.com/repos/distri/sandbox/teams",
-        "hooks_url": "https://api.github.com/repos/distri/sandbox/hooks",
-        "issue_events_url": "https://api.github.com/repos/distri/sandbox/issues/events{/number}",
-        "events_url": "https://api.github.com/repos/distri/sandbox/events",
-        "assignees_url": "https://api.github.com/repos/distri/sandbox/assignees{/user}",
-        "branches_url": "https://api.github.com/repos/distri/sandbox/branches{/branch}",
-        "tags_url": "https://api.github.com/repos/distri/sandbox/tags",
-        "blobs_url": "https://api.github.com/repos/distri/sandbox/git/blobs{/sha}",
-        "git_tags_url": "https://api.github.com/repos/distri/sandbox/git/tags{/sha}",
-        "git_refs_url": "https://api.github.com/repos/distri/sandbox/git/refs{/sha}",
-        "trees_url": "https://api.github.com/repos/distri/sandbox/git/trees{/sha}",
-        "statuses_url": "https://api.github.com/repos/distri/sandbox/statuses/{sha}",
-        "languages_url": "https://api.github.com/repos/distri/sandbox/languages",
-        "stargazers_url": "https://api.github.com/repos/distri/sandbox/stargazers",
-        "contributors_url": "https://api.github.com/repos/distri/sandbox/contributors",
-        "subscribers_url": "https://api.github.com/repos/distri/sandbox/subscribers",
-        "subscription_url": "https://api.github.com/repos/distri/sandbox/subscription",
-        "commits_url": "https://api.github.com/repos/distri/sandbox/commits{/sha}",
-        "git_commits_url": "https://api.github.com/repos/distri/sandbox/git/commits{/sha}",
-        "comments_url": "https://api.github.com/repos/distri/sandbox/comments{/number}",
-        "issue_comment_url": "https://api.github.com/repos/distri/sandbox/issues/comments/{number}",
-        "contents_url": "https://api.github.com/repos/distri/sandbox/contents/{+path}",
-        "compare_url": "https://api.github.com/repos/distri/sandbox/compare/{base}...{head}",
-        "merges_url": "https://api.github.com/repos/distri/sandbox/merges",
-        "archive_url": "https://api.github.com/repos/distri/sandbox/{archive_format}{/ref}",
-        "downloads_url": "https://api.github.com/repos/distri/sandbox/downloads",
-        "issues_url": "https://api.github.com/repos/distri/sandbox/issues{/number}",
-        "pulls_url": "https://api.github.com/repos/distri/sandbox/pulls{/number}",
-        "milestones_url": "https://api.github.com/repos/distri/sandbox/milestones{/number}",
-        "notifications_url": "https://api.github.com/repos/distri/sandbox/notifications{?since,all,participating}",
-        "labels_url": "https://api.github.com/repos/distri/sandbox/labels{/name}",
-        "releases_url": "https://api.github.com/repos/distri/sandbox/releases{/id}",
-        "created_at": "2013-09-11T03:03:50Z",
-        "updated_at": "2014-04-05T17:00:56Z",
-        "pushed_at": "2014-04-05T17:00:56Z",
-        "git_url": "git://github.com/distri/sandbox.git",
-        "ssh_url": "git@github.com:distri/sandbox.git",
-        "clone_url": "https://github.com/distri/sandbox.git",
-        "svn_url": "https://github.com/distri/sandbox",
-        "homepage": null,
-        "size": 284,
-        "stargazers_count": 0,
-        "watchers_count": 0,
-        "language": "CoffeeScript",
-        "has_issues": true,
-        "has_downloads": true,
-        "has_wiki": true,
-        "forks_count": 0,
-        "mirror_url": null,
-        "open_issues_count": 0,
-        "forks": 0,
-        "open_issues": 0,
-        "watchers": 0,
-        "default_branch": "master",
-        "master_branch": "master",
-        "permissions": {
-          "admin": true,
-          "push": true,
-          "pull": true
-        },
-        "organization": {
-          "login": "distri",
-          "id": 6005125,
-          "avatar_url": "https://avatars.githubusercontent.com/u/6005125?",
-          "gravatar_id": "192f3f168409e79c42107f081139d9f3",
-          "url": "https://api.github.com/users/distri",
-          "html_url": "https://github.com/distri",
-          "followers_url": "https://api.github.com/users/distri/followers",
-          "following_url": "https://api.github.com/users/distri/following{/other_user}",
-          "gists_url": "https://api.github.com/users/distri/gists{/gist_id}",
-          "starred_url": "https://api.github.com/users/distri/starred{/owner}{/repo}",
-          "subscriptions_url": "https://api.github.com/users/distri/subscriptions",
-          "organizations_url": "https://api.github.com/users/distri/orgs",
-          "repos_url": "https://api.github.com/users/distri/repos",
-          "events_url": "https://api.github.com/users/distri/events{/privacy}",
-          "received_events_url": "https://api.github.com/users/distri/received_events",
-          "type": "Organization",
-          "site_admin": false
-        },
-        "network_count": 0,
-        "subscribers_count": 1,
-        "branch": "v0.2.2-pre.0",
-        "publishBranch": "gh-pages"
-      },
-      "dependencies": {}
-    },
     "require": {
       "source": {
         "LICENSE": {
@@ -564,6 +392,339 @@ window["distri/runner:v0.2.3-pre.2"]({
         "network_count": 0,
         "subscribers_count": 1,
         "branch": "v0.4.2",
+        "publishBranch": "gh-pages"
+      },
+      "dependencies": {}
+    },
+    "sandbox": {
+      "source": {
+        "LICENSE": {
+          "path": "LICENSE",
+          "content": "The MIT License (MIT)\n\nCopyright (c) 2013 Daniel X Moore\n\nPermission is hereby granted, free of charge, to any person obtaining a copy of\nthis software and associated documentation files (the \"Software\"), to deal in\nthe Software without restriction, including without limitation the rights to\nuse, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of\nthe Software, and to permit persons to whom the Software is furnished to do so,\nsubject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS\nFOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR\nCOPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER\nIN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN\nCONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.\n",
+          "mode": "100644",
+          "type": "blob"
+        },
+        "README.md": {
+          "path": "README.md",
+          "content": "sandbox\n=======\n\nRun code in a popup window filled with sand.\n",
+          "mode": "100644",
+          "type": "blob"
+        },
+        "main.coffee.md": {
+          "path": "main.coffee.md",
+          "content": "Sandbox\n=======\n\nSandbox creates a popup window in which you can run code.\n\nYou can pass in a width and a height to set the size of the window.\n\n    module.exports = ({name, width, height, methods}={}) ->\n      name ?= \"sandbox\" + new Date\n      width ?= 800\n      height ?= 600\n      methods ?= {}\n\n      sandbox = window.open(\n        \"\"\n        name\n        \"width=#{width},height=#{height}\"\n      )\n\nPass in functions to attach to the running window. Useful for things like\n`onerror` or other utilities if you would like the running code to be able to\ncommunicate back to the parent.\n\n      extend sandbox, methods\n\n      autoClose(sandbox)\n\nThe newly created window is returned.\n\n      return sandbox\n\nHelpers\n-------\n\n    extend = (target, sources...) ->\n      for source in sources\n        for name of source\n          target[name] = source[name]\n\n      return target\n\nClose sandbox when closing our window.\n\n    autoClose = (sandbox) ->\n      closer = ->\n        window.removeEventListener \"unload\", closer\n        widget.close()\n\n      sandbox.addEventListener \"unload\", closer\n      window.addEventListener \"unload\", closer\n",
+          "mode": "100644",
+          "type": "blob"
+        },
+        "pixie.cson": {
+          "path": "pixie.cson",
+          "content": "version: \"0.2.2-pre.0\"\n",
+          "mode": "100644",
+          "type": "blob"
+        },
+        "test/sandbox.coffee": {
+          "path": "test/sandbox.coffee",
+          "content": "Sandbox = require \"../main\"\n\ndescribe \"sandbox\", ->\n  it \"should be able to open a window\", ->\n    sandbox = Sandbox()\n\n    assert sandbox\n\n    assert sandbox != window, \"Popup should not be this window\"\n\n    sandbox.close()\n",
+          "mode": "100644",
+          "type": "blob"
+        }
+      },
+      "distribution": {
+        "main": {
+          "path": "main",
+          "content": "(function() {\n  var autoClose, extend,\n    __slice = [].slice;\n\n  module.exports = function(_arg) {\n    var height, methods, name, sandbox, width, _ref;\n    _ref = _arg != null ? _arg : {}, name = _ref.name, width = _ref.width, height = _ref.height, methods = _ref.methods;\n    if (name == null) {\n      name = \"sandbox\" + new Date;\n    }\n    if (width == null) {\n      width = 800;\n    }\n    if (height == null) {\n      height = 600;\n    }\n    if (methods == null) {\n      methods = {};\n    }\n    sandbox = window.open(\"\", name, \"width=\" + width + \",height=\" + height);\n    extend(sandbox, methods);\n    autoClose(sandbox);\n    return sandbox;\n  };\n\n  extend = function() {\n    var name, source, sources, target, _i, _len;\n    target = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];\n    for (_i = 0, _len = sources.length; _i < _len; _i++) {\n      source = sources[_i];\n      for (name in source) {\n        target[name] = source[name];\n      }\n    }\n    return target;\n  };\n\n  autoClose = function(sandbox) {\n    var closer;\n    closer = function() {\n      window.removeEventListener(\"unload\", closer);\n      return widget.close();\n    };\n    sandbox.addEventListener(\"unload\", closer);\n    return window.addEventListener(\"unload\", closer);\n  };\n\n}).call(this);\n",
+          "type": "blob"
+        },
+        "pixie": {
+          "path": "pixie",
+          "content": "module.exports = {\"version\":\"0.2.2-pre.0\"};",
+          "type": "blob"
+        },
+        "test/sandbox": {
+          "path": "test/sandbox",
+          "content": "(function() {\n  var Sandbox;\n\n  Sandbox = require(\"../main\");\n\n  describe(\"sandbox\", function() {\n    return it(\"should be able to open a window\", function() {\n      var sandbox;\n      sandbox = Sandbox();\n      assert(sandbox);\n      assert(sandbox !== window, \"Popup should not be this window\");\n      return sandbox.close();\n    });\n  });\n\n}).call(this);\n",
+          "type": "blob"
+        }
+      },
+      "progenitor": {
+        "url": "http://www.danielx.net/editor/"
+      },
+      "version": "0.2.2-pre.0",
+      "entryPoint": "main",
+      "repository": {
+        "id": 12746310,
+        "name": "sandbox",
+        "full_name": "distri/sandbox",
+        "owner": {
+          "login": "distri",
+          "id": 6005125,
+          "avatar_url": "https://avatars.githubusercontent.com/u/6005125?",
+          "gravatar_id": "192f3f168409e79c42107f081139d9f3",
+          "url": "https://api.github.com/users/distri",
+          "html_url": "https://github.com/distri",
+          "followers_url": "https://api.github.com/users/distri/followers",
+          "following_url": "https://api.github.com/users/distri/following{/other_user}",
+          "gists_url": "https://api.github.com/users/distri/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/distri/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/distri/subscriptions",
+          "organizations_url": "https://api.github.com/users/distri/orgs",
+          "repos_url": "https://api.github.com/users/distri/repos",
+          "events_url": "https://api.github.com/users/distri/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/distri/received_events",
+          "type": "Organization",
+          "site_admin": false
+        },
+        "private": false,
+        "html_url": "https://github.com/distri/sandbox",
+        "description": "Run code in a popup window filled with sand.",
+        "fork": false,
+        "url": "https://api.github.com/repos/distri/sandbox",
+        "forks_url": "https://api.github.com/repos/distri/sandbox/forks",
+        "keys_url": "https://api.github.com/repos/distri/sandbox/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/distri/sandbox/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/distri/sandbox/teams",
+        "hooks_url": "https://api.github.com/repos/distri/sandbox/hooks",
+        "issue_events_url": "https://api.github.com/repos/distri/sandbox/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/distri/sandbox/events",
+        "assignees_url": "https://api.github.com/repos/distri/sandbox/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/distri/sandbox/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/distri/sandbox/tags",
+        "blobs_url": "https://api.github.com/repos/distri/sandbox/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/distri/sandbox/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/distri/sandbox/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/distri/sandbox/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/distri/sandbox/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/distri/sandbox/languages",
+        "stargazers_url": "https://api.github.com/repos/distri/sandbox/stargazers",
+        "contributors_url": "https://api.github.com/repos/distri/sandbox/contributors",
+        "subscribers_url": "https://api.github.com/repos/distri/sandbox/subscribers",
+        "subscription_url": "https://api.github.com/repos/distri/sandbox/subscription",
+        "commits_url": "https://api.github.com/repos/distri/sandbox/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/distri/sandbox/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/distri/sandbox/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/distri/sandbox/issues/comments/{number}",
+        "contents_url": "https://api.github.com/repos/distri/sandbox/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/distri/sandbox/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/distri/sandbox/merges",
+        "archive_url": "https://api.github.com/repos/distri/sandbox/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/distri/sandbox/downloads",
+        "issues_url": "https://api.github.com/repos/distri/sandbox/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/distri/sandbox/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/distri/sandbox/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/distri/sandbox/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/distri/sandbox/labels{/name}",
+        "releases_url": "https://api.github.com/repos/distri/sandbox/releases{/id}",
+        "created_at": "2013-09-11T03:03:50Z",
+        "updated_at": "2014-04-05T17:00:56Z",
+        "pushed_at": "2014-04-05T17:00:56Z",
+        "git_url": "git://github.com/distri/sandbox.git",
+        "ssh_url": "git@github.com:distri/sandbox.git",
+        "clone_url": "https://github.com/distri/sandbox.git",
+        "svn_url": "https://github.com/distri/sandbox",
+        "homepage": null,
+        "size": 284,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "language": "CoffeeScript",
+        "has_issues": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "forks_count": 0,
+        "mirror_url": null,
+        "open_issues_count": 0,
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 0,
+        "default_branch": "master",
+        "master_branch": "master",
+        "permissions": {
+          "admin": true,
+          "push": true,
+          "pull": true
+        },
+        "organization": {
+          "login": "distri",
+          "id": 6005125,
+          "avatar_url": "https://avatars.githubusercontent.com/u/6005125?",
+          "gravatar_id": "192f3f168409e79c42107f081139d9f3",
+          "url": "https://api.github.com/users/distri",
+          "html_url": "https://github.com/distri",
+          "followers_url": "https://api.github.com/users/distri/followers",
+          "following_url": "https://api.github.com/users/distri/following{/other_user}",
+          "gists_url": "https://api.github.com/users/distri/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/distri/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/distri/subscriptions",
+          "organizations_url": "https://api.github.com/users/distri/orgs",
+          "repos_url": "https://api.github.com/users/distri/repos",
+          "events_url": "https://api.github.com/users/distri/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/distri/received_events",
+          "type": "Organization",
+          "site_admin": false
+        },
+        "network_count": 0,
+        "subscribers_count": 1,
+        "branch": "v0.2.2-pre.0",
+        "publishBranch": "gh-pages"
+      },
+      "dependencies": {}
+    },
+    "util": {
+      "source": {
+        "LICENSE": {
+          "path": "LICENSE",
+          "mode": "100644",
+          "content": "The MIT License (MIT)\n\nCopyright (c) 2014 \n\nPermission is hereby granted, free of charge, to any person obtaining a copy\nof this software and associated documentation files (the \"Software\"), to deal\nin the Software without restriction, including without limitation the rights\nto use, copy, modify, merge, publish, distribute, sublicense, and/or sell\ncopies of the Software, and to permit persons to whom the Software is\nfurnished to do so, subject to the following conditions:\n\nThe above copyright notice and this permission notice shall be included in all\ncopies or substantial portions of the Software.\n\nTHE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR\nIMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,\nFITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE\nAUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER\nLIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,\nOUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE\nSOFTWARE.",
+          "type": "blob"
+        },
+        "README.md": {
+          "path": "README.md",
+          "mode": "100644",
+          "content": "util\n====\n\nSmall utility methods for JS\n",
+          "type": "blob"
+        },
+        "main.coffee.md": {
+          "path": "main.coffee.md",
+          "mode": "100644",
+          "content": "Util\n====\n\n    module.exports =\n      approach: (current, target, amount) ->\n        (target - current).clamp(-amount, amount) + current\n\nApply a stylesheet idempotently.\n\n      applyStylesheet: (style, id=\"primary\") ->\n        styleNode = document.createElement(\"style\")\n        styleNode.innerHTML = style\n        styleNode.id = id\n\n        if previousStyleNode = document.head.querySelector(\"style##{id}\")\n          previousStyleNode.parentNode.removeChild(prevousStyleNode)\n\n        document.head.appendChild(styleNode)\n\n      defaults: (target, objects...) ->\n        for object in objects\n          for name of object\n            unless target.hasOwnProperty(name)\n              target[name] = object[name]\n\n        return target\n\n      extend: (target, sources...) ->\n        for source in sources\n          for name of source\n            target[name] = source[name]\n\n        return target\n",
+          "type": "blob"
+        },
+        "pixie.cson": {
+          "path": "pixie.cson",
+          "mode": "100644",
+          "content": "version: \"0.1.0\"\n",
+          "type": "blob"
+        }
+      },
+      "distribution": {
+        "main": {
+          "path": "main",
+          "content": "(function() {\n  var __slice = [].slice;\n\n  module.exports = {\n    approach: function(current, target, amount) {\n      return (target - current).clamp(-amount, amount) + current;\n    },\n    applyStylesheet: function(style, id) {\n      var previousStyleNode, styleNode;\n      if (id == null) {\n        id = \"primary\";\n      }\n      styleNode = document.createElement(\"style\");\n      styleNode.innerHTML = style;\n      styleNode.id = id;\n      if (previousStyleNode = document.head.querySelector(\"style#\" + id)) {\n        previousStyleNode.parentNode.removeChild(prevousStyleNode);\n      }\n      return document.head.appendChild(styleNode);\n    },\n    defaults: function() {\n      var name, object, objects, target, _i, _len;\n      target = arguments[0], objects = 2 <= arguments.length ? __slice.call(arguments, 1) : [];\n      for (_i = 0, _len = objects.length; _i < _len; _i++) {\n        object = objects[_i];\n        for (name in object) {\n          if (!target.hasOwnProperty(name)) {\n            target[name] = object[name];\n          }\n        }\n      }\n      return target;\n    },\n    extend: function() {\n      var name, source, sources, target, _i, _len;\n      target = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];\n      for (_i = 0, _len = sources.length; _i < _len; _i++) {\n        source = sources[_i];\n        for (name in source) {\n          target[name] = source[name];\n        }\n      }\n      return target;\n    }\n  };\n\n}).call(this);\n",
+          "type": "blob"
+        },
+        "pixie": {
+          "path": "pixie",
+          "content": "module.exports = {\"version\":\"0.1.0\"};",
+          "type": "blob"
+        }
+      },
+      "progenitor": {
+        "url": "http://strd6.github.io/editor/"
+      },
+      "version": "0.1.0",
+      "entryPoint": "main",
+      "repository": {
+        "id": 18501018,
+        "name": "util",
+        "full_name": "distri/util",
+        "owner": {
+          "login": "distri",
+          "id": 6005125,
+          "avatar_url": "https://avatars.githubusercontent.com/u/6005125?",
+          "gravatar_id": "192f3f168409e79c42107f081139d9f3",
+          "url": "https://api.github.com/users/distri",
+          "html_url": "https://github.com/distri",
+          "followers_url": "https://api.github.com/users/distri/followers",
+          "following_url": "https://api.github.com/users/distri/following{/other_user}",
+          "gists_url": "https://api.github.com/users/distri/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/distri/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/distri/subscriptions",
+          "organizations_url": "https://api.github.com/users/distri/orgs",
+          "repos_url": "https://api.github.com/users/distri/repos",
+          "events_url": "https://api.github.com/users/distri/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/distri/received_events",
+          "type": "Organization",
+          "site_admin": false
+        },
+        "private": false,
+        "html_url": "https://github.com/distri/util",
+        "description": "Small utility methods for JS",
+        "fork": false,
+        "url": "https://api.github.com/repos/distri/util",
+        "forks_url": "https://api.github.com/repos/distri/util/forks",
+        "keys_url": "https://api.github.com/repos/distri/util/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/distri/util/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/distri/util/teams",
+        "hooks_url": "https://api.github.com/repos/distri/util/hooks",
+        "issue_events_url": "https://api.github.com/repos/distri/util/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/distri/util/events",
+        "assignees_url": "https://api.github.com/repos/distri/util/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/distri/util/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/distri/util/tags",
+        "blobs_url": "https://api.github.com/repos/distri/util/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/distri/util/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/distri/util/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/distri/util/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/distri/util/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/distri/util/languages",
+        "stargazers_url": "https://api.github.com/repos/distri/util/stargazers",
+        "contributors_url": "https://api.github.com/repos/distri/util/contributors",
+        "subscribers_url": "https://api.github.com/repos/distri/util/subscribers",
+        "subscription_url": "https://api.github.com/repos/distri/util/subscription",
+        "commits_url": "https://api.github.com/repos/distri/util/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/distri/util/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/distri/util/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/distri/util/issues/comments/{number}",
+        "contents_url": "https://api.github.com/repos/distri/util/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/distri/util/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/distri/util/merges",
+        "archive_url": "https://api.github.com/repos/distri/util/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/distri/util/downloads",
+        "issues_url": "https://api.github.com/repos/distri/util/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/distri/util/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/distri/util/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/distri/util/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/distri/util/labels{/name}",
+        "releases_url": "https://api.github.com/repos/distri/util/releases{/id}",
+        "created_at": "2014-04-06T22:42:56Z",
+        "updated_at": "2014-04-06T22:42:56Z",
+        "pushed_at": "2014-04-06T22:42:56Z",
+        "git_url": "git://github.com/distri/util.git",
+        "ssh_url": "git@github.com:distri/util.git",
+        "clone_url": "https://github.com/distri/util.git",
+        "svn_url": "https://github.com/distri/util",
+        "homepage": null,
+        "size": 0,
+        "stargazers_count": 0,
+        "watchers_count": 0,
+        "language": null,
+        "has_issues": true,
+        "has_downloads": true,
+        "has_wiki": true,
+        "forks_count": 0,
+        "mirror_url": null,
+        "open_issues_count": 0,
+        "forks": 0,
+        "open_issues": 0,
+        "watchers": 0,
+        "default_branch": "master",
+        "master_branch": "master",
+        "permissions": {
+          "admin": true,
+          "push": true,
+          "pull": true
+        },
+        "organization": {
+          "login": "distri",
+          "id": 6005125,
+          "avatar_url": "https://avatars.githubusercontent.com/u/6005125?",
+          "gravatar_id": "192f3f168409e79c42107f081139d9f3",
+          "url": "https://api.github.com/users/distri",
+          "html_url": "https://github.com/distri",
+          "followers_url": "https://api.github.com/users/distri/followers",
+          "following_url": "https://api.github.com/users/distri/following{/other_user}",
+          "gists_url": "https://api.github.com/users/distri/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/distri/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/distri/subscriptions",
+          "organizations_url": "https://api.github.com/users/distri/orgs",
+          "repos_url": "https://api.github.com/users/distri/repos",
+          "events_url": "https://api.github.com/users/distri/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/distri/received_events",
+          "type": "Organization",
+          "site_admin": false
+        },
+        "network_count": 0,
+        "subscribers_count": 2,
+        "branch": "v0.1.0",
         "publishBranch": "gh-pages"
       },
       "dependencies": {}
