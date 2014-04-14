@@ -14,7 +14,7 @@ When given a document the package runner
       self =
         launch: (pkg, data) ->
           # Get data from running instance
-          data ?= runningInstance.contentWindow?.appData?()
+          data ?= runningInstance?.contentWindow?.appData?()
 
           # Remove Running instance
           runningInstance?.remove()
