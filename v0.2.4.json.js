@@ -20,7 +20,7 @@ window["distri/runner:v0.2.4"]({
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.2.4\"\nentryPoint: \"runner\"\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  sandbox: \"distri/sandbox:v0.2.2\"\n  util: \"distri/util:v0.1.0\"\n",
+      "content": "version: \"0.2.5\"\nentryPoint: \"runner\"\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  sandbox: \"distri/sandbox:v0.2.3\"\n  util: \"distri/util:v0.1.0\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -51,7 +51,7 @@ window["distri/runner:v0.2.4"]({
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.2.4\",\"entryPoint\":\"runner\",\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"sandbox\":\"distri/sandbox:v0.2.2\",\"util\":\"distri/util:v0.1.0\"}};",
+      "content": "module.exports = {\"version\":\"0.2.5\",\"entryPoint\":\"runner\",\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"sandbox\":\"distri/sandbox:v0.2.3\",\"util\":\"distri/util:v0.1.0\"}};",
       "type": "blob"
     },
     "runner": {
@@ -73,7 +73,7 @@ window["distri/runner:v0.2.4"]({
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.2.4",
+  "version": "0.2.5",
   "entryPoint": "runner",
   "repository": {
     "id": 13482507,
@@ -423,13 +423,13 @@ window["distri/runner:v0.2.4"]({
         },
         "main.coffee.md": {
           "path": "main.coffee.md",
-          "content": "Sandbox\n=======\n\nSandbox creates a popup window in which you can run code.\n\nYou can pass in a width and a height to set the size of the window.\n\n    module.exports = ({name, width, height, methods}={}) ->\n      name ?= \"sandbox\" + new Date\n      width ?= 800\n      height ?= 600\n      methods ?= {}\n\n      sandbox = window.open(\n        \"\"\n        name\n        \"width=#{width},height=#{height}\"\n      )\n\nPass in functions to attach to the running window. Useful for things like\n`onerror` or other utilities if you would like the running code to be able to\ncommunicate back to the parent.\n\n      extend sandbox, methods\n\n      autoClose(sandbox)\n\nThe newly created window is returned.\n\n      return sandbox\n\nHelpers\n-------\n\n    extend = (target, sources...) ->\n      for source in sources\n        for name of source\n          target[name] = source[name]\n\n      return target\n\nClose sandbox when closing our window.\n\n    autoClose = (sandbox) ->\n      closer = ->\n        window.removeEventListener \"unload\", closer\n        widget.close()\n\n      sandbox.addEventListener \"unload\", closer\n      window.addEventListener \"unload\", closer\n",
+          "content": "Sandbox\n=======\n\nSandbox creates a popup window in which you can run code.\n\nYou can pass in a width and a height to set the size of the window.\n\n    module.exports = ({name, width, height, methods}={}) ->\n      name ?= \"sandbox\" + new Date\n      width ?= 800\n      height ?= 600\n      methods ?= {}\n\n      sandbox = window.open(\n        \"\"\n        name\n        \"width=#{width},height=#{height}\"\n      )\n\nPass in functions to attach to the running window. Useful for things like\n`onerror` or other utilities if you would like the running code to be able to\ncommunicate back to the parent.\n\n      extend sandbox, methods\n\n      autoClose(sandbox)\n\nThe newly created window is returned.\n\n      return sandbox\n\nHelpers\n-------\n\n    extend = (target, sources...) ->\n      for source in sources\n        for name of source\n          target[name] = source[name]\n\n      return target\n\nClose sandbox when closing our window.\n\n    autoClose = (sandbox) ->\n      closer = ->\n        window.removeEventListener \"unload\", closer\n        sandbox.close()\n\n      sandbox.addEventListener \"unload\", closer\n      window.addEventListener \"unload\", closer\n",
           "mode": "100644",
           "type": "blob"
         },
         "pixie.cson": {
           "path": "pixie.cson",
-          "content": "version: \"0.2.2\"\n",
+          "content": "version: \"0.2.3\"\n",
           "mode": "100644",
           "type": "blob"
         },
@@ -443,12 +443,12 @@ window["distri/runner:v0.2.4"]({
       "distribution": {
         "main": {
           "path": "main",
-          "content": "(function() {\n  var autoClose, extend,\n    __slice = [].slice;\n\n  module.exports = function(_arg) {\n    var height, methods, name, sandbox, width, _ref;\n    _ref = _arg != null ? _arg : {}, name = _ref.name, width = _ref.width, height = _ref.height, methods = _ref.methods;\n    if (name == null) {\n      name = \"sandbox\" + new Date;\n    }\n    if (width == null) {\n      width = 800;\n    }\n    if (height == null) {\n      height = 600;\n    }\n    if (methods == null) {\n      methods = {};\n    }\n    sandbox = window.open(\"\", name, \"width=\" + width + \",height=\" + height);\n    extend(sandbox, methods);\n    autoClose(sandbox);\n    return sandbox;\n  };\n\n  extend = function() {\n    var name, source, sources, target, _i, _len;\n    target = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];\n    for (_i = 0, _len = sources.length; _i < _len; _i++) {\n      source = sources[_i];\n      for (name in source) {\n        target[name] = source[name];\n      }\n    }\n    return target;\n  };\n\n  autoClose = function(sandbox) {\n    var closer;\n    closer = function() {\n      window.removeEventListener(\"unload\", closer);\n      return widget.close();\n    };\n    sandbox.addEventListener(\"unload\", closer);\n    return window.addEventListener(\"unload\", closer);\n  };\n\n}).call(this);\n",
+          "content": "(function() {\n  var autoClose, extend,\n    __slice = [].slice;\n\n  module.exports = function(_arg) {\n    var height, methods, name, sandbox, width, _ref;\n    _ref = _arg != null ? _arg : {}, name = _ref.name, width = _ref.width, height = _ref.height, methods = _ref.methods;\n    if (name == null) {\n      name = \"sandbox\" + new Date;\n    }\n    if (width == null) {\n      width = 800;\n    }\n    if (height == null) {\n      height = 600;\n    }\n    if (methods == null) {\n      methods = {};\n    }\n    sandbox = window.open(\"\", name, \"width=\" + width + \",height=\" + height);\n    extend(sandbox, methods);\n    autoClose(sandbox);\n    return sandbox;\n  };\n\n  extend = function() {\n    var name, source, sources, target, _i, _len;\n    target = arguments[0], sources = 2 <= arguments.length ? __slice.call(arguments, 1) : [];\n    for (_i = 0, _len = sources.length; _i < _len; _i++) {\n      source = sources[_i];\n      for (name in source) {\n        target[name] = source[name];\n      }\n    }\n    return target;\n  };\n\n  autoClose = function(sandbox) {\n    var closer;\n    closer = function() {\n      window.removeEventListener(\"unload\", closer);\n      return sandbox.close();\n    };\n    sandbox.addEventListener(\"unload\", closer);\n    return window.addEventListener(\"unload\", closer);\n  };\n\n}).call(this);\n",
           "type": "blob"
         },
         "pixie": {
           "path": "pixie",
-          "content": "module.exports = {\"version\":\"0.2.2\"};",
+          "content": "module.exports = {\"version\":\"0.2.3\"};",
           "type": "blob"
         },
         "test/sandbox": {
@@ -460,7 +460,7 @@ window["distri/runner:v0.2.4"]({
       "progenitor": {
         "url": "http://www.danielx.net/editor/"
       },
-      "version": "0.2.2",
+      "version": "0.2.3",
       "entryPoint": "main",
       "repository": {
         "id": 12746310,
@@ -526,8 +526,8 @@ window["distri/runner:v0.2.4"]({
         "labels_url": "https://api.github.com/repos/distri/sandbox/labels{/name}",
         "releases_url": "https://api.github.com/repos/distri/sandbox/releases{/id}",
         "created_at": "2013-09-11T03:03:50Z",
-        "updated_at": "2014-04-05T17:00:56Z",
-        "pushed_at": "2014-04-05T17:00:56Z",
+        "updated_at": "2014-04-14T15:13:11Z",
+        "pushed_at": "2014-04-14T15:13:14Z",
         "git_url": "git://github.com/distri/sandbox.git",
         "ssh_url": "git@github.com:distri/sandbox.git",
         "clone_url": "https://github.com/distri/sandbox.git",
@@ -574,7 +574,7 @@ window["distri/runner:v0.2.4"]({
         },
         "network_count": 0,
         "subscribers_count": 1,
-        "branch": "v0.2.2",
+        "branch": "v0.2.3",
         "publishBranch": "gh-pages"
       },
       "dependencies": {}
