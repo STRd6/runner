@@ -32,6 +32,8 @@ probably won't want to give it the one in your own window.
           runningInstance = document.createElement "iframe"
           document.body.appendChild runningInstance
 
+          proxyCalls document, runningInstance
+
           # Pass in app state
           extend runningInstance.contentWindow.ENV ?= {},
             APP_STATE: data
@@ -75,6 +77,12 @@ can be used for generating standalone HTML pages, scripts, and tests.
 Helpers
 -------
 
+Proxy calls from the iframe to the top window. Currently just proxying logging,
+but may add others as needed.
+
+    proxyCalls = (document, iframe) ->
+      iframe.contentWindow.console = document.defaultView.console
+
 `makeScript` returns a string representation of a script tag that has a src
 attribute.
 
@@ -91,8 +99,8 @@ the remote script dependencies of this build.
       styleNode = document.createElement("style")
       styleNode.innerHTML = style
       styleNode.id = id
-  
+
       if previousStyleNode = document.head.querySelector("style##{id}")
         previousStyleNode.parentNode.removeChild(prevousStyleNode)
-  
+
       document.head.appendChild(styleNode)
