@@ -36,6 +36,9 @@
 <p>The <code>launch</code> command will get the state of the app, replace the iframe with a clean
 one, boot the new package and reload the app state. You can also optionally pass
 in an app state to launch into.</p>
+<p>A primary reason for wrapping the running iframe with a shim window is that we
+can dispose of timeouts and everything else very cleanly, while still keeping the
+same opened window.</p>
 <p>One example use of hot reloading is if you are modifying your css you can run
 several instances of your app and navigate to different states. Then you can see
 in real time how the css changes affect each one.</p>
@@ -45,7 +48,12 @@ probably won&#39;t want to give it the one in your own window.</p>
             </div>
             <div class="content"><pre><code class="lang-coffeescript">{extend} = require <span class="string">"util"</span>
 
-module.<span class="function"><span class="title">exports</span></span> = (document) -&gt;
+Sandbox = require <span class="string">"sandbox"</span>
+
+module.<span class="function"><span class="title">exports</span></span> = (config={}) -&gt;
+  sandbox = Sandbox(config)
+  document = sandbox.document
+
   applyStylesheet document, require <span class="string">"./style"</span>
   runningInstance = <span class="literal">null</span>
 
@@ -69,7 +77,13 @@ module.<span class="function"><span class="title">exports</span></span> = (docum
 
       runningInstance.contentWindow.document.write html(pkg)
 
-      <span class="keyword">return</span> self</code></pre>
+      <span class="keyword">return</span> self
+
+    close: -&gt;
+      sandbox.close()
+
+    eval: (code) -&gt;
+      runningInstance.contentWindow.eval(code)</code></pre>
 </div>
         </li>
         
@@ -148,7 +162,11 @@ but may add others as needed.</p>
 
             </div>
             <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">proxyCalls</span></span> = (document, iframe) -&gt;
-  iframe.contentWindow.console = document.defaultView.console</code></pre>
+  [
+    <span class="string">"opener"</span>
+    <span class="string">"console"</span>
+  ].forEach (name) -&gt;
+    iframe.contentWindow[name] = document.defaultView[name]</code></pre>
 </div>
         </li>
         
