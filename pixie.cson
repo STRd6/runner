@@ -1,6 +1,6 @@
-version: "0.2.5"
-entryPoint: "runner"
+version: "0.2.6"
+entryPoint: "main"
 dependencies:
   require: "distri/require:v0.4.2"
-  sandbox: "distri/sandbox:v0.2.3"
+  sandbox: "distri/sandbox:v0.2.4"
   util: "distri/util:v0.1.0"

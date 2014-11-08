@@ -7,6 +7,10 @@ The `launch` command will get the state of the app, replace the iframe with a cl
 one, boot the new package and reload the app state. You can also optionally pass
 in an app state to launch into.
 
+A primary reason for wrapping the running iframe with a shim window is that we
+can dispose of timeouts and everything else very cleanly, while still keeping the
+same opened window.
+
 One example use of hot reloading is if you are modifying your css you can run
 several instances of your app and navigate to different states. Then you can see
 in real time how the css changes affect each one.
@@ -16,7 +20,12 @@ probably won't want to give it the one in your own window.
 
     {extend} = require "util"
 
-    module.exports = (document) ->
+    Sandbox = require "sandbox"
+
+    module.exports = (config={}) ->
+      sandbox = Sandbox(config)
+      document = sandbox.document
+
       applyStylesheet document, require "./style"
       runningInstance = null
 
@@ -41,6 +50,12 @@ probably won't want to give it the one in your own window.
           runningInstance.contentWindow.document.write html(pkg)
 
           return self
+
+        close: ->
+          sandbox.close()
+
+        eval: (code) ->
+          runningInstance.contentWindow.eval(code)
 
 A standalone html page for a package.
 
@@ -81,7 +96,11 @@ Proxy calls from the iframe to the top window. Currently just proxying logging,
 but may add others as needed.
 
     proxyCalls = (document, iframe) ->
-      iframe.contentWindow.console = document.defaultView.console
+      [
+        "opener"
+        "console"
+      ].forEach (name) ->
+        iframe.contentWindow[name] = document.defaultView[name]
 
 `makeScript` returns a string representation of a script tag that has a src
 attribute.

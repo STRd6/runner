@@ -1,33 +1,32 @@
-Runner = require "../runner"
-
-describe "runner", ->
-  it "should launch windows", (done) ->
-    runner = Runner()
-    r = null
-
-    setTimeout ->
-      r = runner.run()
-
-      assert r != window, "Popup should not be this window"
-    , 100
-
-    setTimeout ->
-      r.close()
-      done()
-    , 200
+{PackageRunner} = require "../main"
 
 describe "PackageRunner", ->
-  it "should launch and run packages", (done) ->
-    {PackageRunner} = Runner
-    runner = Runner()
-
-    sandbox = runner.run()
-    
-    launcher = PackageRunner(sandbox.document)
+  it "should be separate from the popup", (done) ->
+    launcher = PackageRunner()
 
     launcher.launch(PACKAGE)
 
-    setTimeout ->
-      sandbox.close()
-      done()
-    , 1000
+    assert launcher.eval("window !== top")
+
+    launcher.close()
+    done()
+    
+  it "should share console with the popup", (done) ->
+    launcher = PackageRunner()
+
+    launcher.launch(PACKAGE)
+
+    assert launcher.eval("console === top.console")
+
+    launcher.close()
+    done()
+
+  it "should share opener with the popup", (done) ->
+    launcher = PackageRunner()
+
+    launcher.launch(PACKAGE)
+
+    assert launcher.eval("opener === top.opener")
+
+    launcher.close()
+    done()
