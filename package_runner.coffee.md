@@ -51,6 +51,8 @@ probably won't want to give it the one in your own window.
 
           return self
 
+        window: sandbox
+
         close: ->
           sandbox.close()
 

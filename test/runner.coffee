@@ -10,7 +10,16 @@ describe "PackageRunner", ->
 
     launcher.close()
     done()
-    
+
+  it "should have a window", (done) ->
+    launcher = PackageRunner()
+
+    assert launcher.window
+    assert launcher.window != window
+
+    launcher.close()
+    done()
+
   it "should share console with the popup", (done) ->
     launcher = PackageRunner()
 
