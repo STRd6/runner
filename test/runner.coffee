@@ -1,4 +1,18 @@
-{PackageRunner} = require "../main"
+{PackageRunner} = Runner = require "../main"
+
+describe "Runner", ->
+  it "should be able to open a window with content", (done) ->
+    p = new Promise (resolve) ->
+      setTimeout ->
+        resolve "some content"
+
+    Runner.openWindowWithContent({}, p)
+    .then (sandbox) ->
+      assert.equal sandbox.document.body.innerText, "some content"
+      sandbox.close()
+      done()
+    .catch (err) ->
+      console.log err
 
 describe "PackageRunner", ->
   it "should be separate from the popup", (done) ->
