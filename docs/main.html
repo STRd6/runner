@@ -35,9 +35,41 @@
               <p>Expose some runners.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript">module.exports =
-  Sandbox: require <span class="string">"sandbox"</span>
+            <div class="content"><pre><code class="lang-coffeescript">Sandbox = require <span class="string">"sandbox"</span>
+
+module.exports =
+  Sandbox: Sandbox
   PackageRunner: require <span class="string">"./package_runner"</span></code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Run some code in a sandboxed popup window. We need to popup the window immediately
+in response to user input to prevent pop-up blocking so we also pass a promise
+that will contain the content to render in the window. If the promise fails we
+auto-close the window.</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">  openWindowWithContent: (config, contentPromise) -&gt;
+    sandbox = Sandbox config
+
+    contentPromise.<span class="keyword">then</span>(
+      (content) -&gt;
+        sandbox.document.open()
+        sandbox.document.write(content)
+        sandbox.document.close()
+
+        sandbox
+      , (error) -&gt;
+        sandbox.close()
+
+        <span class="keyword">throw</span> error
+    )</code></pre>
 </div>
         </li>
         

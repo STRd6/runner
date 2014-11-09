@@ -20,7 +20,7 @@ window["distri/runner:master"]({
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.2.7-pre.0\"\nentryPoint: \"main\"\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  sandbox: \"distri/sandbox:v0.2.4\"\n  util: \"distri/util:v0.1.0\"\n",
+      "content": "version: \"0.2.7-pre.1\"\nentryPoint: \"main\"\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  sandbox: \"distri/sandbox:v0.2.4\"\n  util: \"distri/util:v0.1.0\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -32,13 +32,13 @@ window["distri/runner:master"]({
     },
     "test/runner.coffee": {
       "path": "test/runner.coffee",
-      "content": "{PackageRunner} = require \"../main\"\n\ndescribe \"PackageRunner\", ->\n  it \"should be separate from the popup\", (done) ->\n    launcher = PackageRunner()\n\n    launcher.launch(PACKAGE)\n\n    assert launcher.eval(\"window !== top\")\n\n    launcher.close()\n    done()\n\n  it \"should have a window\", (done) ->\n    launcher = PackageRunner()\n\n    assert launcher.window\n    assert launcher.window != window\n\n    launcher.close()\n    done()\n\n  it \"should share console with the popup\", (done) ->\n    launcher = PackageRunner()\n\n    launcher.launch(PACKAGE)\n\n    assert launcher.eval(\"console === top.console\")\n\n    launcher.close()\n    done()\n\n  it \"should share opener with the popup\", (done) ->\n    launcher = PackageRunner()\n\n    launcher.launch(PACKAGE)\n\n    assert launcher.eval(\"opener === top.opener\")\n\n    launcher.close()\n    done()\n",
+      "content": "{PackageRunner} = Runner = require \"../main\"\n\ndescribe \"Runner\", ->\n  it \"should be able to open a window with content\", (done) ->\n    p = new Promise (resolve) ->\n      setTimeout ->\n        resolve \"some content\"\n\n    Runner.openWindowWithContent({}, p)\n    .then (sandbox) ->\n      assert.equal sandbox.document.body.innerText, \"some content\"\n      sandbox.close()\n      done()\n    .catch (err) ->\n      console.log err\n\ndescribe \"PackageRunner\", ->\n  it \"should be separate from the popup\", (done) ->\n    launcher = PackageRunner()\n\n    launcher.launch(PACKAGE)\n\n    assert launcher.eval(\"window !== top\")\n\n    launcher.close()\n    done()\n\n  it \"should have a window\", (done) ->\n    launcher = PackageRunner()\n\n    assert launcher.window\n    assert launcher.window != window\n\n    launcher.close()\n    done()\n\n  it \"should share console with the popup\", (done) ->\n    launcher = PackageRunner()\n\n    launcher.launch(PACKAGE)\n\n    assert launcher.eval(\"console === top.console\")\n\n    launcher.close()\n    done()\n\n  it \"should share opener with the popup\", (done) ->\n    launcher = PackageRunner()\n\n    launcher.launch(PACKAGE)\n\n    assert launcher.eval(\"opener === top.opener\")\n\n    launcher.close()\n    done()\n",
       "mode": "100644",
       "type": "blob"
     },
     "main.coffee.md": {
       "path": "main.coffee.md",
-      "content": "Runner\n======\n\nExpose some runners.\n\n    module.exports =\n      Sandbox: require \"sandbox\"\n      PackageRunner: require \"./package_runner\"\n",
+      "content": "Runner\n======\n\nExpose some runners.\n\n    Sandbox = require \"sandbox\"\n\n    module.exports =\n      Sandbox: Sandbox\n      PackageRunner: require \"./package_runner\"\n\nRun some code in a sandboxed popup window. We need to popup the window immediately\nin response to user input to prevent pop-up blocking so we also pass a promise\nthat will contain the content to render in the window. If the promise fails we\nauto-close the window.\n\n      openWindowWithContent: (config, contentPromise) ->\n        sandbox = Sandbox config\n\n        contentPromise.then(\n          (content) ->\n            sandbox.document.open()\n            sandbox.document.write(content)\n            sandbox.document.close()\n\n            sandbox\n          , (error) ->\n            sandbox.close()\n\n            throw error\n        )\n",
       "mode": "100644"
     }
   },
@@ -50,7 +50,7 @@ window["distri/runner:master"]({
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.2.7-pre.0\",\"entryPoint\":\"main\",\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"sandbox\":\"distri/sandbox:v0.2.4\",\"util\":\"distri/util:v0.1.0\"}};",
+      "content": "module.exports = {\"version\":\"0.2.7-pre.1\",\"entryPoint\":\"main\",\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"sandbox\":\"distri/sandbox:v0.2.4\",\"util\":\"distri/util:v0.1.0\"}};",
       "type": "blob"
     },
     "style": {
@@ -60,19 +60,19 @@ window["distri/runner:master"]({
     },
     "test/runner": {
       "path": "test/runner",
-      "content": "(function() {\n  var PackageRunner;\n\n  PackageRunner = require(\"../main\").PackageRunner;\n\n  describe(\"PackageRunner\", function() {\n    it(\"should be separate from the popup\", function(done) {\n      var launcher;\n      launcher = PackageRunner();\n      launcher.launch(PACKAGE);\n      assert(launcher[\"eval\"](\"window !== top\"));\n      launcher.close();\n      return done();\n    });\n    it(\"should have a window\", function(done) {\n      var launcher;\n      launcher = PackageRunner();\n      assert(launcher.window);\n      assert(launcher.window !== window);\n      launcher.close();\n      return done();\n    });\n    it(\"should share console with the popup\", function(done) {\n      var launcher;\n      launcher = PackageRunner();\n      launcher.launch(PACKAGE);\n      assert(launcher[\"eval\"](\"console === top.console\"));\n      launcher.close();\n      return done();\n    });\n    return it(\"should share opener with the popup\", function(done) {\n      var launcher;\n      launcher = PackageRunner();\n      launcher.launch(PACKAGE);\n      assert(launcher[\"eval\"](\"opener === top.opener\"));\n      launcher.close();\n      return done();\n    });\n  });\n\n}).call(this);\n",
+      "content": "(function() {\n  var PackageRunner, Runner;\n\n  PackageRunner = (Runner = require(\"../main\")).PackageRunner;\n\n  describe(\"Runner\", function() {\n    return it(\"should be able to open a window with content\", function(done) {\n      var p;\n      p = new Promise(function(resolve) {\n        return setTimeout(function() {\n          return resolve(\"some content\");\n        });\n      });\n      return Runner.openWindowWithContent({}, p).then(function(sandbox) {\n        assert.equal(sandbox.document.body.innerText, \"some content\");\n        sandbox.close();\n        return done();\n      })[\"catch\"](function(err) {\n        return console.log(err);\n      });\n    });\n  });\n\n  describe(\"PackageRunner\", function() {\n    it(\"should be separate from the popup\", function(done) {\n      var launcher;\n      launcher = PackageRunner();\n      launcher.launch(PACKAGE);\n      assert(launcher[\"eval\"](\"window !== top\"));\n      launcher.close();\n      return done();\n    });\n    it(\"should have a window\", function(done) {\n      var launcher;\n      launcher = PackageRunner();\n      assert(launcher.window);\n      assert(launcher.window !== window);\n      launcher.close();\n      return done();\n    });\n    it(\"should share console with the popup\", function(done) {\n      var launcher;\n      launcher = PackageRunner();\n      launcher.launch(PACKAGE);\n      assert(launcher[\"eval\"](\"console === top.console\"));\n      launcher.close();\n      return done();\n    });\n    return it(\"should share opener with the popup\", function(done) {\n      var launcher;\n      launcher = PackageRunner();\n      launcher.launch(PACKAGE);\n      assert(launcher[\"eval\"](\"opener === top.opener\"));\n      launcher.close();\n      return done();\n    });\n  });\n\n}).call(this);\n",
       "type": "blob"
     },
     "main": {
       "path": "main",
-      "content": "(function() {\n  module.exports = {\n    Sandbox: require(\"sandbox\"),\n    PackageRunner: require(\"./package_runner\")\n  };\n\n}).call(this);\n",
+      "content": "(function() {\n  var Sandbox;\n\n  Sandbox = require(\"sandbox\");\n\n  module.exports = {\n    Sandbox: Sandbox,\n    PackageRunner: require(\"./package_runner\"),\n    openWindowWithContent: function(config, contentPromise) {\n      var sandbox;\n      sandbox = Sandbox(config);\n      return contentPromise.then(function(content) {\n        sandbox.document.open();\n        sandbox.document.write(content);\n        sandbox.document.close();\n        return sandbox;\n      }, function(error) {\n        sandbox.close();\n        throw error;\n      });\n    }\n  };\n\n}).call(this);\n",
       "type": "blob"
     }
   },
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.2.7-pre.0",
+  "version": "0.2.7-pre.1",
   "entryPoint": "main",
   "repository": {
     "branch": "master",
