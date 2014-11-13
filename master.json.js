@@ -26,7 +26,7 @@ window["distri/runner:master"]({
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.2.7\"\nentryPoint: \"main\"\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  sandbox: \"distri/sandbox:v0.2.4\"\n  util: \"distri/util:v0.1.0\"\n",
+      "content": "version: \"0.2.8\"\nentryPoint: \"main\"\ndependencies:\n  require: \"distri/require:v0.4.2\"\n  sandbox: \"distri/sandbox:v0.2.4\"\n  util: \"distri/util:v0.1.0\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -56,7 +56,7 @@ window["distri/runner:master"]({
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.2.7\",\"entryPoint\":\"main\",\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"sandbox\":\"distri/sandbox:v0.2.4\",\"util\":\"distri/util:v0.1.0\"}};",
+      "content": "module.exports = {\"version\":\"0.2.8\",\"entryPoint\":\"main\",\"dependencies\":{\"require\":\"distri/require:v0.4.2\",\"sandbox\":\"distri/sandbox:v0.2.4\",\"util\":\"distri/util:v0.1.0\"}};",
       "type": "blob"
     },
     "style": {
@@ -73,7 +73,7 @@ window["distri/runner:master"]({
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.2.7",
+  "version": "0.2.8",
   "entryPoint": "main",
   "repository": {
     "branch": "master",
