@@ -1,4 +1,4 @@
-version: "0.2.7-pre.1"
+version: "0.2.7"
 entryPoint: "main"
 dependencies:
   require: "distri/require:v0.4.2"
