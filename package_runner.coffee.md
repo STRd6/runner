@@ -51,6 +51,39 @@ probably won't want to give it the one in your own window.
 
           return self
 
+Make RPC calls to running a package that is using `Postmaster`.
+
+Returns a promise that is fulfilled with the results of the successful 
+invocation of the call, or rejected with an error object.
+
+        send: do ->
+          incId = -1
+
+          handlers = {}
+
+          addEventListener "message", ({source, data}) ->
+            if source is runningInstance?.contentWindow
+              {type, id, success, error} = data
+
+              if type is "response"
+                if success
+                  handlers[id][0](success)
+                else if error
+                  handlers[id][1](error)
+
+                delete handlers[id]
+
+          (method, params...) ->
+            new Promise (resolve, reject) ->
+              incId += 1
+              handlers[incId] = [resolve, reject]
+
+              runningInstance.contentWindow.postMessage
+                id: incId
+                method: method
+                params: params
+              , "*"
+
         window: sandbox
 
         close: ->
