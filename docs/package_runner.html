@@ -77,7 +77,48 @@ module.<span class="function"><span class="title">exports</span></span> = (confi
 
       runningInstance.contentWindow.document.write html(pkg)
 
-      <span class="keyword">return</span> self
+      <span class="keyword">return</span> self</code></pre>
+</div>
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              <div class="pilwrap">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Make RPC calls to running a package that is using <code>Postmaster</code>.</p>
+<p>Returns a promise that is fulfilled with the results of the successful 
+invocation of the call, or rejected with an error object.</p>
+
+            </div>
+            <div class="content"><pre><code class="lang-coffeescript">    send: <span class="keyword">do</span> -&gt;
+      incId = -<span class="number">1</span>
+
+      handlers = {}
+
+      addEventListener <span class="string">"message"</span>, ({source, data}) -&gt;
+        <span class="keyword">if</span> source <span class="keyword">is</span> runningInstance?.contentWindow
+          {type, id, success, error} = data
+
+          <span class="keyword">if</span> type <span class="keyword">is</span> <span class="string">"response"</span>
+            <span class="keyword">if</span> success
+              handlers[id][<span class="number">0</span>](success)
+            <span class="keyword">else</span> <span class="keyword">if</span> error
+              handlers[id][<span class="number">1</span>](error)
+
+            <span class="keyword">delete</span> handlers[id]
+
+      (method, params...) -&gt;
+        <span class="keyword">new</span> Promise (resolve, reject) -&gt;
+          incId += <span class="number">1</span>
+          handlers[incId] = [resolve, reject]
+
+          runningInstance.contentWindow.postMessage
+            id: incId
+            method: method
+            params: params
+          , <span class="string">"*"</span>
 
     window: sandbox
 
@@ -90,10 +131,10 @@ module.<span class="function"><span class="title">exports</span></span> = (confi
         </li>
         
         
-        <li id="section-3">
+        <li id="section-4">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-3">&#182;</a>
+                <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
               <p>A standalone html page for a package.</p>
 
@@ -117,10 +158,10 @@ module.<span class="function"><span class="title">exports</span></span> = (confi
         </li>
         
         
-        <li id="section-4">
+        <li id="section-5">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-4">&#182;</a>
+                <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>Wrap code in a closure that provides the package and a require function. This
 can be used for generating standalone HTML pages, scripts, and tests.</p>
@@ -140,10 +181,10 @@ can be used for generating standalone HTML pages, scripts, and tests.</p>
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <h2 id="helpers">Helpers</h2>
 
@@ -154,10 +195,10 @@ can be used for generating standalone HTML pages, scripts, and tests.</p>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>Proxy calls from the iframe to the top window. Currently just proxying logging,
 but may add others as needed.</p>
@@ -173,10 +214,10 @@ but may add others as needed.</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p><code>makeScript</code> returns a string representation of a script tag that has a src
 attribute.</p>
@@ -188,10 +229,10 @@ attribute.</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               <div class="pilwrap">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p><code>dependencyScripts</code> returns a string containing the script tags that are
 the remote script dependencies of this build.</p>
