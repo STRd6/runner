@@ -192,7 +192,7 @@
     },
     "pixie.cson": {
       "path": "pixie.cson",
-      "content": "version: \"0.3.0-pre.0\"\nentryPoint: \"main\"\ndependencies:\n  postmaster: \"distri/postmaster:v0.2.3\" # Just for testing\n  require: \"distri/require:v0.5.0-pre.1\"\n  sandbox: \"distri/sandbox:v0.2.4\"\n  util: \"distri/util:v0.1.0\"\n",
+      "content": "version: \"0.3.0\"\nentryPoint: \"main\"\ndependencies:\n  postmaster: \"distri/postmaster:v0.2.3\" # Just for testing\n  require: \"distri/require:v0.5.0\"\n  sandbox: \"distri/sandbox:v0.2.4\"\n  util: \"distri/util:v0.1.0\"\n",
       "mode": "100644",
       "type": "blob"
     },
@@ -222,7 +222,7 @@
     },
     "pixie": {
       "path": "pixie",
-      "content": "module.exports = {\"version\":\"0.3.0-pre.0\",\"entryPoint\":\"main\",\"dependencies\":{\"postmaster\":\"distri/postmaster:v0.2.3\",\"require\":\"distri/require:v0.5.0-pre.1\",\"sandbox\":\"distri/sandbox:v0.2.4\",\"util\":\"distri/util:v0.1.0\"}};",
+      "content": "module.exports = {\"version\":\"0.3.0\",\"entryPoint\":\"main\",\"dependencies\":{\"postmaster\":\"distri/postmaster:v0.2.3\",\"require\":\"distri/require:v0.5.0\",\"sandbox\":\"distri/sandbox:v0.2.4\",\"util\":\"distri/util:v0.1.0\"}};",
       "type": "blob"
     },
     "style": {
@@ -239,7 +239,7 @@
   "progenitor": {
     "url": "http://www.danielx.net/editor/"
   },
-  "version": "0.3.0-pre.0",
+  "version": "0.3.0",
   "entryPoint": "main",
   "repository": {
     "branch": "master",
@@ -341,7 +341,7 @@
         },
         "pixie.cson": {
           "path": "pixie.cson",
-          "content": "version: \"0.5.0-pre.1\"\n",
+          "content": "version: \"0.5.0\"\n",
           "mode": "100644",
           "type": "blob"
         },
@@ -384,7 +384,7 @@
         },
         "pixie": {
           "path": "pixie",
-          "content": "module.exports = {\"version\":\"0.5.0-pre.1\"};",
+          "content": "module.exports = {\"version\":\"0.5.0\"};",
           "type": "blob"
         },
         "samples/circular": {
@@ -416,10 +416,10 @@
       "progenitor": {
         "url": "http://www.danielx.net/editor/"
       },
-      "version": "0.5.0-pre.1",
+      "version": "0.5.0",
       "entryPoint": "main",
       "repository": {
-        "branch": "v0.5.0-pre.1",
+        "branch": "v0.5.0",
         "default_branch": "master",
         "full_name": "distri/require",
         "homepage": null,
