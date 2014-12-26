@@ -53,7 +53,7 @@ probably won't want to give it the one in your own window.
 
 Make RPC calls to running a package that is using `Postmaster`.
 
-Returns a promise that is fulfilled with the results of the successful 
+Returns a promise that is fulfilled with the results of the successful
 invocation of the call, or rejected with an error object.
 
         send: do ->
@@ -104,24 +104,10 @@ A standalone html page for a package.
         </head>
         <body>
         <script>
-        #{packageWrapper(pkg, "require('./#{pkg.entryPoint}')")}
+        #{require('require').executePackageWrapper(pkg)}
         <\/script>
         </body>
         </html>
-      """
-
-Wrap code in a closure that provides the package and a require function. This
-can be used for generating standalone HTML pages, scripts, and tests.
-
-    packageWrapper = (pkg, code) ->
-      """
-        ;(function(PACKAGE) {
-        var oldRequire = window.Require;
-        #{PACKAGE.dependencies.require.distribution.main.content}
-        var require = Require.generateFor(PACKAGE);
-        window.Require = oldRequire;
-        #{code}
-        })(#{JSON.stringify(pkg, null, 2)});
       """
 
 Helpers

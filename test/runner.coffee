@@ -80,11 +80,11 @@ describe "PackageRunner", ->
       launcher.send "successRPC"
       .then (result) ->
         assert.equal result, "success"
-  
+
       launcher.send "failRPC"
       .catch (e) ->
         assert.equal e.message, "I am error"
-  
+
       launcher.send("echo", 5)
       .then (result) ->
         assert.equal result, 5
