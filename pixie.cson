@@ -1,4 +1,4 @@
-version: "0.3.0"
+version: "0.3.1"
 entryPoint: "main"
 dependencies:
   postmaster: "distri/postmaster:v0.2.3" # Just for testing

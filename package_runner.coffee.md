@@ -94,7 +94,7 @@ invocation of the call, or rejected with an error object.
 
 A standalone html page for a package.
 
-    html = (pkg) ->
+    html = module.exports.html = (pkg) ->
       """
         <!DOCTYPE html>
         <html>
