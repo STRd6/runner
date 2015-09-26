@@ -17,6 +17,7 @@ describe "Runner", ->
 describe "PackageRunner", ->
   it "should be separate from the popup", (done) ->
     launcher = PackageRunner()
+    launcher.popOut()
 
     launcher.launch(PACKAGE)
 
@@ -25,17 +26,9 @@ describe "PackageRunner", ->
     launcher.close()
     done()
 
-  it "should have a window", (done) ->
-    launcher = PackageRunner()
-
-    assert launcher.window
-    assert launcher.window != window
-
-    launcher.close()
-    done()
-
   it "should share console with the popup", (done) ->
     launcher = PackageRunner()
+    launcher.popOut()
 
     launcher.launch(PACKAGE)
 
@@ -46,6 +39,7 @@ describe "PackageRunner", ->
 
   it "should share opener with the popup", (done) ->
     launcher = PackageRunner()
+    launcher.popOut()
 
     launcher.launch(PACKAGE)
 
@@ -74,21 +68,32 @@ describe "PackageRunner", ->
       entryPoint: "main"
 
     launcher = PackageRunner()
+    launcher.popOut()
     launcher.launch(pkg)
 
     Promise.all [
-      launcher.send "successRPC"
+      launcher.invokeRemote "successRPC"
       .then (result) ->
         assert.equal result, "success"
 
-      launcher.send "failRPC"
+      launcher.invokeRemote "failRPC"
       .catch (e) ->
         assert.equal e.message, "I am error"
 
-      launcher.send("echo", 5)
+      launcher.invokeRemote("echo", 5)
       .then (result) ->
         assert.equal result, 5
     ]
     .then ->
       launcher.close()
       done()
+
+Sandbox = require "../sandbox"
+describe "sandbox", ->
+  it "should be able to open a window", ->
+    sandbox = Sandbox()
+
+    assert sandbox
+    assert sandbox != window, "Popup should not be this window"
+
+    sandbox.close()
