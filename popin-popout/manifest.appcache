@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# 1443302678125
+
+CACHE:
+index.html
+../popin-popout.json.js
+
+
+NETWORK:
+https://*
+http://*
+*
