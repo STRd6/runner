@@ -73,6 +73,8 @@ module.<span class="function"><span class="title">exports</span></span> = (confi
 
     launch: (pkg, data) -&gt;
       <span class="comment"># Get data from running instance</span>
+      <span class="comment"># TODO: This won't work on remote urls,</span>
+      <span class="comment"># need to use postMessage</span>
       data ?= runningInstance?.contentWindow?.appData?()
 
       <span class="comment"># Remove Running instance</span>
@@ -82,7 +84,7 @@ module.<span class="function"><span class="title">exports</span></span> = (confi
       runningInstance = document.createElement <span class="string">"iframe"</span>
       externalDocument.body.appendChild runningInstance
 
-      proxyCalls externalDocument, runningInstance
+      proxyCalls externalWindow, runningInstance
 
       <span class="comment"># Pass in app state</span>
       extend runningInstance.contentWindow.ENV ?= {},
@@ -155,12 +157,15 @@ module.<span class="function"><span class="title">exports</span></span> = (confi
 but may add others as needed.</p>
 
             </div>
-            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">proxyCalls</span></span> = (document, iframe) -&gt;
+            <div class="content"><pre><code class="lang-coffeescript"><span class="function"><span class="title">proxyCalls</span></span> = (window, iframe) -&gt;
   [
     <span class="string">"opener"</span>
     <span class="string">"console"</span>
   ].forEach (name) -&gt;
-    iframe.contentWindow[name] = document.defaultView[name]</code></pre>
+    <span class="comment"># !!! Can't do this on remote urls</span>
+    <span class="comment"># Either need to do a full postMessage proxy</span>
+    <span class="comment"># or don't wrap remote windows, just let them be</span>
+    iframe.contentWindow[name] = window[name]</code></pre>
 </div>
         </li>
         
