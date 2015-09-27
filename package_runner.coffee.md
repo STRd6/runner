@@ -45,6 +45,8 @@ probably won't want to give it the one in your own window.
 
         launch: (pkg, data) ->
           # Get data from running instance
+          # TODO: This won't work on remote urls,
+          # need to use postMessage
           data ?= runningInstance?.contentWindow?.appData?()
 
           # Remove Running instance
@@ -54,7 +56,7 @@ probably won't want to give it the one in your own window.
           runningInstance = document.createElement "iframe"
           externalDocument.body.appendChild runningInstance
 
-          proxyCalls externalDocument, runningInstance
+          proxyCalls externalWindow, runningInstance
 
           # Pass in app state
           extend runningInstance.contentWindow.ENV ?= {},
@@ -98,12 +100,15 @@ Helpers
 Proxy calls from the iframe to the top window. Currently just proxying logging,
 but may add others as needed.
 
-    proxyCalls = (document, iframe) ->
+    proxyCalls = (window, iframe) ->
       [
         "opener"
         "console"
       ].forEach (name) ->
-        iframe.contentWindow[name] = document.defaultView[name]
+        # !!! Can't do this on remote urls
+        # Either need to do a full postMessage proxy
+        # or don't wrap remote windows, just let them be
+        iframe.contentWindow[name] = window[name]
 
 `makeScript` returns a string representation of a script tag that has a src
 attribute.
