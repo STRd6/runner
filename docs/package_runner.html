@@ -76,6 +76,7 @@ module.<span class="function"><span class="title">exports</span></span> = (confi
         APP_STATE: data
 
       runningInstance.contentWindow.document.write html(pkg)
+      runningInstance.contentWindow.document.close()
 
       <span class="keyword">return</span> self</code></pre>
 </div>
