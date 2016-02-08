@@ -48,6 +48,7 @@ probably won't want to give it the one in your own window.
             APP_STATE: data
 
           runningInstance.contentWindow.document.write html(pkg)
+          runningInstance.contentWindow.document.close()
 
           return self
 
