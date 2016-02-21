@@ -114,8 +114,7 @@ A standalone html page for a package.
 Helpers
 -------
 
-Proxy calls from the iframe to the top window. Currently just proxying logging,
-but may add others as needed.
+Proxy calls from the iframe to the top window.
 
     proxyCalls = (document, iframe) ->
       [
