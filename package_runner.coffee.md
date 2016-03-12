@@ -20,18 +20,33 @@ probably won't want to give it the one in your own window.
 
     {extend} = require "util"
 
-    Sandbox = require "sandbox"
+    Sandbox = require "./sandbox"
+    Postmaster = require "postmaster"
 
     module.exports = (config={}) ->
-      sandbox = Sandbox(config)
-      document = sandbox.document
-
-      applyStylesheet document, require "./style"
       runningInstance = null
+      
+      externalWindow = null
+      externalDocument = null
 
       self =
+        popOut: ->
+          return if externalWindow
+
+          externalWindow = Sandbox(config)
+          externalDocument = externalWindow.document
+    
+          applyStylesheet externalDocument, require "./style"
+
+          # TODO: Migrate data from existing state
+      
+        remoteTarget: ->
+          runningInstance?.contentWindow
+
         launch: (pkg, data) ->
           # Get data from running instance
+          # TODO: This won't work on remote urls,
+          # need to use postMessage
           data ?= runningInstance?.contentWindow?.appData?()
 
           # Remove Running instance
@@ -39,9 +54,9 @@ probably won't want to give it the one in your own window.
 
           # Create new instance
           runningInstance = document.createElement "iframe"
-          document.body.appendChild runningInstance
+          externalDocument.body.appendChild runningInstance
 
-          proxyCalls document, runningInstance
+          proxyCalls externalWindow, runningInstance
 
           # Pass in app state
           extend runningInstance.contentWindow.ENV ?= {},
@@ -52,46 +67,15 @@ probably won't want to give it the one in your own window.
 
           return self
 
-Make RPC calls to running a package that is using `Postmaster`.
-
-Returns a promise that is fulfilled with the results of the successful
-invocation of the call, or rejected with an error object.
-
-        send: do ->
-          incId = -1
-
-          handlers = {}
-
-          addEventListener "message", ({source, data}) ->
-            if source is runningInstance?.contentWindow
-              {type, id, success, error} = data
-
-              if type is "response"
-                if success
-                  handlers[id][0](success)
-                else if error
-                  handlers[id][1](error)
-
-                delete handlers[id]
-
-          (method, params...) ->
-            new Promise (resolve, reject) ->
-              incId += 1
-              handlers[incId] = [resolve, reject]
-
-              runningInstance.contentWindow.postMessage
-                id: incId
-                method: method
-                params: params
-              , "*"
-
-        window: sandbox
-
         close: ->
-          sandbox.close()
+          externalWindow.close()
 
         eval: (code) ->
           runningInstance.contentWindow.eval(code)
+
+      Postmaster(config, self)
+
+      return self
 
 A standalone html page for a package.
 
@@ -116,12 +100,15 @@ Helpers
 
 Proxy calls from the iframe to the top window.
 
-    proxyCalls = (document, iframe) ->
+    proxyCalls = (window, iframe) ->
       [
         "opener"
         "console"
       ].forEach (name) ->
-        iframe.contentWindow[name] = document.defaultView[name]
+        # !!! Can't do this on remote urls
+        # Either need to do a full postMessage proxy
+        # or don't wrap remote windows, just let them be
+        iframe.contentWindow[name] = window[name]
 
 `makeScript` returns a string representation of a script tag that has a src
 attribute.

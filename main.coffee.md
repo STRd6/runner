@@ -3,7 +3,7 @@ Runner
 
 Expose some runners.
 
-    Sandbox = require "sandbox"
+    Sandbox = require "./sandbox"
 
     module.exports =
       Sandbox: Sandbox
